@@ -26,6 +26,11 @@
         }
     }
 </script>
+
+<script type="module">
+    import React from "react";
+    console.log(React);
+</script>
 ```
 
 # 代码提示器
@@ -34,3 +39,17 @@
 # 预览
 - **iframe 标签**
 - 左侧的 tsx 代码被编译，编译完后引入带一个 html文件中，并将这个 html 文件展示在iframe中
+
+# allotment 拖拽组件
+- 下载：npm i allotment
+
+# 样式隔离
+- index.module.scss 将组件的样式隔离起来，不会影响到其他组件的样式
+- 下载：npm i -D sass
+- 使用：import styles from './index.module.scss'
+- 组件中使用：className={styles.组件名}
+- 组件中使用：{...styles.组件名}
+
+# 代码提示器 @monaco-editor/react 代码提示
+- 第三方的库需要代码提示：@typescript/ata
+- 下载：npm i @typescript/ata
