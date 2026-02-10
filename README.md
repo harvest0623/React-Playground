@@ -18,7 +18,7 @@
 - 下载：npm i @babel/core @types/babel__core
 
 # 引入 React
-``` JavaScript
+```html
 <script type="importmap">
     {
         "imports": {
@@ -53,3 +53,7 @@
 # 代码提示器 @monaco-editor/react 代码提示
 - 第三方的库需要代码提示：@typescript/ata
 - 下载：npm i @typescript/ata
+
+# 防抖
+- 用于处理用户在超出时间才重新渲染
+- 下载：npm i lodash-es @types/lodash-es  --save
