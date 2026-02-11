@@ -57,3 +57,8 @@
 # 防抖
 - 用于处理用户在超出时间才重新渲染
 - 下载：npm i lodash-es @types/lodash-es  --save
+
+# 下载代码文件
+- 用于将多个文件打包成一个 zip 文件
+- 用于将 zip 文件保存到本地
+- 下载：npm i jszip file-saver @types/file-saver
