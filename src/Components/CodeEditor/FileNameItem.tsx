@@ -9,10 +9,11 @@ interface FileNameItemProps {
     creating: boolean,
     onRemove: (e: React.MouseEvent, name: string) => void,
     readOnly: boolean
+    isDarkMode: boolean
 }
 
 export default function FileNameItem(props: FileNameItemProps) {
-    const { value, actived, onClick, onEditComplete, creating, onRemove, readOnly } = props;
+    const { value, actived, onClick, onEditComplete, creating, onRemove, readOnly, isDarkMode } = props;
     const [editing, setEditing] = useState<boolean>(creating);
     const [name, setName] = useState<string>(value);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -53,8 +54,8 @@ export default function FileNameItem(props: FileNameItemProps) {
                         <span onDoubleClick={!readOnly ? handleDoubleClick : undefined}>{name}</span>
                         {!readOnly ? <span style={{ marginLeft: 5, display: 'flex' }} onClick={(e) => onRemove(e, name)}>
                             <svg width='12' height='12' viewBox='0 0 24 24'>
-                                <line stroke='#999' x1='18' y1='6' x2='6' y2='18'></line>
-                                <line stroke='#999' x1='6' y1='6' x2='18' y2='18'></line>
+                                <line stroke={isDarkMode ? '#fff' : '#999'} x1='18' y1='6' x2='6' y2='18'></line>
+                                <line stroke={isDarkMode ? '#fff' : '#999'} x1='6' y1='6' x2='18' y2='18'></line>
                             </svg>
                         </span> : null}
                     </>

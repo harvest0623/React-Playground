@@ -20,7 +20,7 @@ export default function CodeEditor() {
     //     language: 'typescript',
     // }
 
-    const { files, selectedFileName, setFiles } = useContext(PlaygroundContext);
+    const { files, selectedFileName, setFiles, isDarkMode } = useContext(PlaygroundContext);
     const file = files[selectedFileName];  // App.tsx 的文件对象
 
     // 编辑器内容变化时的回调
@@ -33,9 +33,9 @@ export default function CodeEditor() {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+        <div style={{display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDarkMode ? '#000' : '#fff'}}>
             <FileNameList/>
-            <Editor file={file} onChange={debounce(onEditorChange, 300)}/>
+            <Editor file={file} onChange={debounce(onEditorChange, 300)} isDarkMode={isDarkMode}/>
         </div>
     )
 }

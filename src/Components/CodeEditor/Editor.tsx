@@ -12,10 +12,11 @@ interface Props {
     file: EditorFile
     onChange?: EditorProps['onChange'],
     options?: EditorProps['options'],
+    isDarkMode?: boolean
 }
 
 export default function Editor(props: Props) {
-    const { file, onChange, options } = props;
+    const { file, onChange, options, isDarkMode } = props;
 
     // const code = `
     //     import './App.scss'
@@ -55,7 +56,7 @@ export default function Editor(props: Props) {
     return (
         <MonacoEditor
             height="100%"
-            theme="vs-dark"
+            theme={isDarkMode ? "vs-dark" : "vs"}
             language={file.language}
             path={file.name}
             value={file.value}

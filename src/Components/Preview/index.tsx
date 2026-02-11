@@ -6,7 +6,7 @@ import iframeRaw from './iframe.html?raw'
 import { IMPORT_MAP_FILE_NAME } from '../../ReactPlayground/files.ts'
 
 export default function Preview() {
-    const { files } = useContext(PlaygroundContext);
+    const { files, isDarkMode } = useContext(PlaygroundContext);
     const [iframeUrl, setIframeUrl] = useState<string>('');
     
     //  写法一
@@ -34,7 +34,7 @@ export default function Preview() {
     }, [files[IMPORT_MAP_FILE_NAME].value, compiledCode]);
 
     return (
-        <div style={{height: '100%'}}>
+        <div style={{height: '100%', backgroundColor: isDarkMode ? '#fff' : '#000'}}>
             <iframe src={iframeUrl} style={{height: '100%', width: '100%', border: 'none', padding: 0}} />
             {/* <Editor 
                 file={{

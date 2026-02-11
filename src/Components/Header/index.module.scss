@@ -3,6 +3,8 @@
     padding: 0 20px;
     box-sizing: border-box;
     border-bottom: 1px solid #000;
+    background-color: #fff;
+    color: #000;
 
     display: flex;
     align-items: center;
@@ -17,5 +19,84 @@
             height: 24px;
             margin-right: 10px;
         }
+    }
+
+    .iconContainer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    button {
+        margin-right: 20px;
+        padding: 5px 10px;
+        border: 1px solid #000;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    .themeToggle {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        i {
+            font-size: 24px;
+        }
+        
+        .icon-taiyang {
+            font-size: 24px;
+        }
+        .icon-yueliang {
+            font-size: 24px;
+        }
+    }
+
+    .iconButton {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        i {
+            font-size: 24px;
+        }
+    }
+}
+
+.header.dark {
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid #333;
+
+    button {
+        border: 1px solid #fff;
+        background-color: #000;
+        color: #fff;
+    }
+
+    .themeToggle:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .iconButton:hover {
+        background-color: rgba(255, 255, 255, 0.1);
     }
 }

@@ -5,7 +5,7 @@ import styles from './index.module.scss'
 import { ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME } from '../../ReactPlayground/files.ts'
 
 export default function FileNameList() {
-    const { files, selectedFileName, setSelectedFileName, addFile, removeFile, updateFileName } = useContext(PlaygroundContext);
+    const { files, selectedFileName, setSelectedFileName, addFile, removeFile, updateFileName, isDarkMode } = useContext(PlaygroundContext);
     const [tabs, setTabs] = useState<string[]>([]);
     
     useEffect(() => {
@@ -27,7 +27,7 @@ export default function FileNameList() {
     const readOnlyTabs = [ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME];
 
     return (
-        <div className={styles['tabs']}>
+        <div className={`${styles['tabs']} ${isDarkMode ? styles['dark'] : ''}`}>
             {tabs.map((tab, index, arr) => (
                 <FileNameItem
                     key={tab}
@@ -42,6 +42,7 @@ export default function FileNameList() {
                         setSelectedFileName(tabs[0])
                     }}
                     readOnly={readOnlyTabs.includes(tab)}
+                    isDarkMode={isDarkMode}
                 />
 
                 // <div key={tab} onClick={() => setSelectedFileName(tab)}>{tab}</div>
