@@ -13,7 +13,7 @@ export default function Header() {
             {/* React Playground logo */}
             <div className={styles.logo}>
                 <img src={logoSvg} alt="" />
-                <span>React Playground</span>
+                <span style={{fontSize: '26px'}}>React Playground</span>
             </div>
 
             <div className={styles.iconContainer}>
@@ -26,16 +26,19 @@ export default function Header() {
                 {/* Share 分享 */}
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-fenxiang" onClick={() => {}}></i>
+                    <div className={styles.tooltip}>Share</div>
                 </div>
                 
                 {/* Download 下载 */}
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-xiazai" onClick={() => downLoadFiles(files)}></i>
+                    <div className={styles.tooltip}>Download</div>
                 </div>
 
                 {/* GitHub 代码 */}
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-github" onClick={() => window.open('https://github.com/harvest0623/React-Playground', '_blank')}></i>
+                    <div className={styles.tooltip}>GitHub</div>
                 </div>
 
             </div>

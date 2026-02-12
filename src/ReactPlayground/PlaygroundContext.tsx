@@ -65,10 +65,12 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     // }
 
     const removeFile = (name: string) => {
-        setFiles((prevFiles) => {
-            const { [name]: _, ...restFiles } = prevFiles;
-            return restFiles;
-        })
+        if (confirm(`Do you really want to delete ${name}?`)) {
+            setFiles((prevFiles) => {
+                const { [name]: _, ...restFiles } = prevFiles;
+                return restFiles;
+            })
+        }
     }
 
     const updateFileName = (oldFileName: string, newFileName: string) => {

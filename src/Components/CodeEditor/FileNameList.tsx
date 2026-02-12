@@ -27,27 +27,31 @@ export default function FileNameList() {
     const readOnlyTabs = [ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME];
 
     return (
-        <div className={`${styles['tabs']} ${isDarkMode ? styles['dark'] : ''}`}>
-            {tabs.map((tab, index, arr) => (
-                <FileNameItem
-                    key={tab}
-                    value={tab}
-                    actived={tab === selectedFileName}
-                    onClick={() => setSelectedFileName(tab)}
-                    onEditComplete={(name: string) => handleEditComplete(tab, name)}
-                    creating={index === arr.length - 1}
-                    onRemove={(e: React.MouseEvent, name: string) => {
-                        e.stopPropagation()  // 阻止事件冒泡，防止点击删除按钮后触发点击文件名事件
-                        removeFile(name)
-                        setSelectedFileName(tabs[0])
-                    }}
-                    readOnly={readOnlyTabs.includes(tab)}
-                    isDarkMode={isDarkMode}
-                />
+        <div className={`${styles['tabs-container']} ${isDarkMode ? styles['dark'] : ''}`}>
+            <div className={styles['tabs']}>
+                {tabs.map((tab, index, arr) => (
+                    <FileNameItem
+                        key={tab}
+                        value={tab}
+                        actived={tab === selectedFileName}
+                        onClick={() => setSelectedFileName(tab)}
+                        onEditComplete={(name: string) => handleEditComplete(tab, name)}
+                        creating={index === arr.length - 1}
+                        onRemove={(e: React.MouseEvent, name: string) => {
+                            e.stopPropagation()  // 阻止事件冒泡，防止点击删除按钮后触发点击文件名事件
+                            removeFile(name)
+                            setSelectedFileName(tabs[0])
+                        }}
+                        readOnly={readOnlyTabs.includes(tab)}
+                        isDarkMode={isDarkMode}
+                    />
 
-                // <div key={tab} onClick={() => setSelectedFileName(tab)}>{tab}</div>
-            ))}
-            <div className={styles['add']} onClick={addTab}>+</div>
+                    // <div key={tab} onClick={() => setSelectedFileName(tab)}>{tab}</div>
+                ))}
+            </div>
+            <div className={styles['tabs-actions']}>
+                <div className={styles['add']} onClick={addTab}>+</div>
+            </div>
         </div>
     )
 }
