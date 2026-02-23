@@ -1,35 +1,10 @@
 # 🎨 React Playground 
 
-<div align="center">
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #61DAFB; color: #000; font-size: 0.875rem; font-weight: 500;">React 19.2.0
-    </span>
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #3178C6; color: #fff; font-size: 0.875rem; font-weight: 500;">TypeScript 5.9.3
-    </span>
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #646CFF; color: #fff; font-size: 0.875rem; font-weight: 500;">Vite 7.2.4
-    </span>
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #F9DC5C; color: #000; font-size: 0.875rem; font-weight: 500;">Babel 7.29.0
-    </span>
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #007ACC; color: #fff; font-size: 0.875rem; font-weight: 500;">Monaco Editor 4.7.0
-    </span>
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #22C55E; color: #fff; font-size: 0.875rem; font-weight: 500;">Allotment 1.20.5
-    </span>
-    <span 
-        style="display: inline-block; padding: 0.25rem 0.75rem; 
-        margin: 0.25rem; border-radius: 4px; background-color: #CD6799; color: #fff; font-size: 0.875rem; font-weight: 500;">Sass 1.97.3
-    </span>
-</div>
+[<img src="https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React" />](https://react.dev/) [<img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />](https://www.typescriptlang.org/) [<img src="https://img.shields.io/badge/Vite-6.0+-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />](https://vitejs.dev/) [<img src="https://img.shields.io/badge/Babel-7.16+-F9DC3E?style=flat-square&logo=babel&logoColor=black" alt="Babel" />](https://babeljs.io/) [<img src="https://img.shields.io/badge/Monaco_Editor-4.0+-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/) [<img src="https://img.shields.io/badge/Allotment-1.0+-764ABC?style=flat-square&logo=react&logoColor=white" alt="Allotment" />](https://github.com/johnwalley/allotment) [<img src="https://img.shields.io/badge/Sass-1.40+-CC6699?style=flat-square&logo=sass&logoColor=white" alt="Sass" />](https://sass-lang.com/)
+
+**本项目使用：**
+
+[<img src="https://img.shields.io/badge/React-19.2.0-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React" />](https://react.dev/) [<img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />](https://www.typescriptlang.org/) [<img src="https://img.shields.io/badge/Vite-7.2.4-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />](https://vitejs.dev/) [<img src="https://img.shields.io/badge/Babel-7.29.0-F9DC3E?style=flat-square&logo=babel&logoColor=black" alt="Babel" />](https://babeljs.io/) [<img src="https://img.shields.io/badge/Monaco_Editor-4.7.0-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/) [<img src="https://img.shields.io/badge/Allotment-1.20.5-764ABC?style=flat-square&logo=react&logoColor=white" alt="Allotment" />](https://github.com/johnwalley/allotment) [<img src="https://img.shields.io/badge/Sass-1.97.3-CC6699?style=flat-square&logo=sass&logoColor=white" alt="Sass" />](https://sass-lang.com/)
 
 > **一个轻量、现代的在线 React 代码编辑器**，专为前端开发者打造，支持 TypeScript/TSX 实时编辑与预览，让你在浏览器中快速迭代组件原型。
 
