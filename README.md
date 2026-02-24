@@ -6,7 +6,7 @@
 
 [<img src="https://img.shields.io/badge/React-19.2.0-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React" />](https://react.dev/) [<img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />](https://www.typescriptlang.org/) [<img src="https://img.shields.io/badge/Vite-7.2.4-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />](https://vitejs.dev/) [<img src="https://img.shields.io/badge/Babel-7.29.0-F9DC3E?style=flat-square&logo=babel&logoColor=black" alt="Babel" />](https://babeljs.io/) [<img src="https://img.shields.io/badge/Monaco_Editor-4.7.0-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/) [<img src="https://img.shields.io/badge/Allotment-1.20.5-764ABC?style=flat-square&logo=react&logoColor=white" alt="Allotment" />](https://github.com/johnwalley/allotment) [<img src="https://img.shields.io/badge/Sass-1.97.3-CC6699?style=flat-square&logo=sass&logoColor=white" alt="Sass" />](https://sass-lang.com/)
 
-> **一个轻量、现代的在线 React 代码编辑器**，专为前端开发者打造，支持 TypeScript/TSX 实时编辑与预览，让你在浏览器中快速迭代组件原型。
+> **一个轻量、现代的在线 React 代码编辑器**，专为前端开发者打造，支持 TypeScript/TSX 等多语言实时编辑与预览，让你在浏览器中快速迭代组件原型。
 
 ## ✨ 项目亮点
 
@@ -86,31 +86,37 @@ src/
 
 ## 🏃 快速开始
 
-### 1. 安装依赖
+### 1. 克隆项目到本地
+
+```bash
+git clone https://github.com/harvest0623/React-Playground.git
+```
+
+### 2. 安装依赖
 
 ```bash
 npm install
 ```
 
-### 2. 启动开发服务器
+### 3. 启动开发服务器
 
 ```bash
 npm run dev
 ```
 
-### 3. 构建生产版本
+### 4. 构建生产版本
 
 ```bash
 npm run build
 ```
 
-### 4. 运行代码检查
+### 5. 运行代码检查
 
 ```bash
 npm run lint
 ```
 
-### 5. 预览生产构建
+### 6. 预览生产构建
 
 ```bash
 npm run preview
