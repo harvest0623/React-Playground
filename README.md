@@ -1,22 +1,22 @@
 # 🎨 React Playground 
 
-[<img src="https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />](https://react.dev/)
-[<img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=3178C6" alt="TypeScript" />](https://www.typescriptlang.org/)
-[<img src="https://img.shields.io/badge/Vite-6.0+-646CFF?style=flat-square&logo=vite&logoColor=646CFF" alt="Vite" />](https://vitejs.dev/)
-[<img src="https://img.shields.io/badge/Babel-7.16+-F9DC3E?style=flat-square&logo=babel&logoColor=F9DC3E" alt="Babel" />](https://babeljs.io/)
-[<img src="https://img.shields.io/badge/Monaco_Editor-4.0+-007ACC?style=flat-square&logo=visualstudiocode&logoColor=FF7F50" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/)
-[<img src="https://img.shields.io/badge/Allotment-1.0+-CB3837?style=flat-square&logo=npm&logoColor=CB3837" alt="Allotment" />](https://github.com/johnwalley/allotment)
-[<img src="https://img.shields.io/badge/Sass-1.40+-CC6699?style=flat-square&logo=sass&logoColor=CC6699" alt="Sass" />](https://sass-lang.com/)
+[<img src="https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=61DAFB" alt="React"/>](https://react.dev/)
+[<img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=3178C6" alt="TypeScript" />](https://www.typescriptlang.org/)
+[<img src="https://img.shields.io/badge/Vite-6.0+-646CFF?logo=vite&logoColor=646CFF" alt="Vite" />](https://vitejs.dev/)
+[<img src="https://img.shields.io/badge/Babel-7.16+-F9DC3E?logo=babel&logoColor=F9DC3E" alt="Babel" />](https://babeljs.io/)
+[<img src="https://img.shields.io/badge/Monaco_Editor-4.0+-FF7F50?logo=codefactor&logoColor=FF7F50" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/)
+[<img src="https://img.shields.io/badge/Allotment-1.0+-CB3837?logo=npm&logoColor=CB3837" alt="Allotment" />](https://github.com/johnwalley/allotment)
+[<img src="https://img.shields.io/badge/Sass-1.40+-CC6699?logo=sass&logoColor=CC6699" alt="Sass" />](https://sass-lang.com/)
 
 **本项目使用：**
 
-[<img src="https://img.shields.io/badge/React-19.2.0-61DAFB?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />](https://react.dev/)
-[<img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript&logoColor=3178C6" alt="TypeScript" />](https://www.typescriptlang.org/)
-[<img src="https://img.shields.io/badge/Vite-7.2.4-646CFF?style=flat-square&logo=vite&logoColor=646CFF" alt="Vite" />](https://vitejs.dev/)
-[<img src="https://img.shields.io/badge/Babel-7.29.0-F9DC3E?style=flat-square&logo=babel&logoColor=F9DC3E" alt="Babel" />](https://babeljs.io/)
-[<img src="https://img.shields.io/badge/Monaco_Editor-4.7.0-007ACC?style=flat-square&logo=visualstudiocode&logoColor=FF7F50" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/)
-[<img src="https://img.shields.io/badge/Allotment-1.20.5-CB3837?style=flat-square&logo=npm&logoColor=CB3837" alt="Allotment" />](https://github.com/johnwalley/allotment)
-[<img src="https://img.shields.io/badge/Sass-1.97.3-CC6699?style=flat-square&logo=sass&logoColor=CC6699" alt="Sass" />](https://sass-lang.com/)
+[<img src="https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react&logoColor=61DAFB" alt="React" />](https://react.dev/)
+[<img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=3178C6" alt="TypeScript" />](https://www.typescriptlang.org/)
+[<img src="https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite&logoColor=646CFF" alt="Vite" />](https://vitejs.dev/)
+[<img src="https://img.shields.io/badge/Babel-7.29.0-F9DC3E?logo=babel&logoColor=F9DC3E" alt="Babel" />](https://babeljs.io/)
+[<img src="https://img.shields.io/badge/Monaco_Editor-4.7.0-FF7F50?logo=codefactor&logoColor=FF7F50" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/)
+[<img src="https://img.shields.io/badge/Allotment-1.20.5-CB3837?logo=npm&logoColor=CB3837" alt="Allotment" />](https://github.com/johnwalley/allotment)
+[<img src="https://img.shields.io/badge/Sass-1.97.3-CC6699?logo=sass&logoColor=CC6699" alt="Sass" />](https://sass-lang.com/)
 
 > **一个轻量、现代的在线 React 代码编辑器**，专为前端开发者打造，支持 TypeScript/TSX 等多语言实时编辑与预览，让你在浏览器中快速迭代组件原型。
 
