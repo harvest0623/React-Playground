@@ -1,31 +1,69 @@
 import type { Files } from '../../ReactPlayground/PlaygroundContext.tsx'
 import { ENTRY_FILE_NAME } from '../../ReactPlayground/files'
 import { transform } from '@babel/standalone'
-import type { BabelFileResult, PluginObj } from '@babel/core';
+import type { PluginObj } from '@babel/core';
 import type { EditorFile } from "../CodeEditor/Editor";
 
-const beforeTransformCode = (filename: string, code: string) => {
+export interface CompileResult {
+    code: string;
+    error: string | null;
+    errorLine: number | null;
+}
+
+const blobUrls = new Set<string>();
+
+function revokeOldBlobUrls() {
+    blobUrls.forEach(url => URL.revokeObjectURL(url));
+    blobUrls.clear();
+}
+
+function createBlobUrl(code: string): string {
+    const url = URL.createObjectURL(new Blob([code], { type: 'application/javascript' }));
+    blobUrls.add(url);
+    return url;
+}
+
+function simpleHash(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+    }
+    return hash;
+}
+
+interface CacheEntry {
+    hash: number;
+    blobUrl: string;
+}
+
+const compileCache = new Map<string, CacheEntry>();
+
+function getCachedBlobUrl(filename: string, code: string): string | null {
+    const hash = simpleHash(code);
+    const cached = compileCache.get(filename);
+    if (cached && cached.hash === hash) {
+        return cached.blobUrl;
+    }
+    return null;
+}
+
+function setCache(filename: string, code: string, blobUrl: string) {
+    const hash = simpleHash(code);
+    compileCache.set(filename, { hash, blobUrl });
+}
+
+function clearCache() {
+    compileCache.clear();
+}
+
+function ensureReactImport(filename: string, code: string): string {
     const regexReact = /import\s+React/g;
     if ((filename.endsWith('.tsx') || filename.endsWith('.jsx')) && !regexReact.test(code)) {
         return `import React from 'react';\n${code}`;
     }
     return code;
-}
-
-export const babelTransform = (filename: string, code: string, files: Files) => {
-    let _code = beforeTransformCode(filename, code);
-    let res = '';
-    try {
-        res = transform(_code, {
-            presets: ['react', 'typescript'],
-            filename,
-            plugins: [customResolver(files)],  // 需要一个插件，在编译的过程中将 import 引入的文件路径替换为 blob 链接
-            retainLines: true,  // 保留原有格式
-        }).code!;  // 编译后的代码，断言非空
-    } catch (error) {
-        console.error('编译出错:', error);
-    }
-    return res;
 }
 
 function customResolver(files: Files): PluginObj {
@@ -39,15 +77,13 @@ function customResolver(files: Files): PluginObj {
                     if(!file) {
                         return;
                     }
-                    if(file.name.endsWith('.css')) {  // 是 css 文件就不处理成 blob，而是把 css 转成 js 语法
+                    if(file.name.endsWith('.css')) {
                         path.node.source.value = CssToJS(file);
-                    } else if (file.name.endsWith('.json')) {    
+                    } else if (file.name.endsWith('.json')) {
                         path.node.source.value = JsonToJS(file);
                     } else {
-                        path.node.source.value = URL.createObjectURL(
-                            // 递归将引入的文件也编译成 js
-                            new Blob([babelTransform(file.name, file.value, files)], { type: 'application/javascript' })
-                        );
+                        const compiled = babelTransform(file.name, file.value, files);
+                        path.node.source.value = compiled.code;
                     }
                 }
             }
@@ -55,13 +91,46 @@ function customResolver(files: Files): PluginObj {
     }
 }
 
-export const compile = (files: Files) => {
+export const babelTransform = (filename: string, code: string, files: Files): CompileResult => {
+    const cachedUrl = getCachedBlobUrl(filename, code);
+    if (cachedUrl) {
+        return { code: cachedUrl, error: null, errorLine: null };
+    }
+
+    const _code = ensureReactImport(filename, code);
+    try {
+        const result = transform(_code, {
+            presets: ['react', 'typescript'],
+            filename,
+            plugins: [customResolver(files)],
+            retainLines: true,
+        });
+        const blobUrl = createBlobUrl(result.code!);
+        setCache(filename, code, blobUrl);
+        return { code: blobUrl, error: null, errorLine: null };
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        const lineMatch = message.match(/(\d+):(\d+)/);
+        return {
+            code: '',
+            error: message,
+            errorLine: lineMatch ? parseInt(lineMatch[1]) : null,
+        };
+    }
+}
+
+export const compile = (files: Files): CompileResult => {
+    revokeOldBlobUrls();
+    clearCache();
     const main = files[ENTRY_FILE_NAME];
+    if (!main) {
+        return { code: '', error: `Entry file "${ENTRY_FILE_NAME}" not found`, errorLine: null };
+    }
     return babelTransform(ENTRY_FILE_NAME, main.value, files);
 }
 
 function getModuleFile(files: Files, modulepath: string) {
-    let moduleName = modulepath.split('./').pop() || '';   //  './App.tsx' => 'App.tsx'
+    let moduleName = modulepath.split('./').pop() || '';
     if (moduleName.includes('.')) {
         const realModuleName = Object.keys(files).filter(key => {
             return key.endsWith('.ts') || key.endsWith('.tsx') || key.endsWith('.js') || key.endsWith('.jsx');
@@ -77,21 +146,22 @@ function getModuleFile(files: Files, modulepath: string) {
 
 const JsonToJS = (file: EditorFile) => {
     const js = `export default ${file.value}`;
-    return URL.createObjectURL(new Blob([js], { type: 'application/javascript' }));
+    return createBlobUrl(js);
 }
 
 const CssToJS = (file: EditorFile) => {
-    const randomId = new Date().getTime();
+    const safeId = file.name.replace(/[^a-zA-Z0-9]/g, '_');
     const js = `
     (() => {
-        const stylesheet = document.createElement('style')
-        stylesheet.setAttribute('id', 'style_${randomId}_${file.name}')
-        document.head.appendChild(stylesheet)
-
-        const styles = document.createTextNode(\`${file.value}\`)
-        stylesheet.innerHTML = ''
-        stylesheet.appendChild(styles)
+        const id = 'style_${safeId}';
+        const existing = document.getElementById(id);
+        if (existing) existing.remove();
+        const stylesheet = document.createElement('style');
+        stylesheet.setAttribute('id', id);
+        document.head.appendChild(stylesheet);
+        const styles = document.createTextNode(\`${file.value}\`);
+        stylesheet.appendChild(styles);
     })()
-        `;
-    return URL.createObjectURL(new Blob([js], { type: 'application/javascript' }));
+    `;
+    return createBlobUrl(js);
 }

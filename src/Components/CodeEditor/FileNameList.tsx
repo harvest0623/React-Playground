@@ -38,9 +38,13 @@ export default function FileNameList() {
                         onEditComplete={(name: string) => handleEditComplete(tab, name)}
                         creating={index === arr.length - 1}
                         onRemove={(e: React.MouseEvent, name: string) => {
-                            e.stopPropagation()  // 阻止事件冒泡，防止点击删除按钮后触发点击文件名事件
+                            e.stopPropagation()
+                            const idx = tabs.indexOf(name)
+                            const next = tabs[idx + 1] || tabs[idx - 1] || tabs[0]
                             removeFile(name)
-                            setSelectedFileName(tabs[0])
+                            if (name === selectedFileName && next) {
+                                setSelectedFileName(next)
+                            }
                         }}
                         readOnly={readOnlyTabs.includes(tab)}
                         isDarkMode={isDarkMode}

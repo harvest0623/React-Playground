@@ -5,6 +5,7 @@ import type { PluginObj } from '@babel/core'
 export default function App() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const code = `
         import { useEffect, useState } from "react";
         function App() {

@@ -1,6 +1,8 @@
+import { useContext } from 'react'
 import MonacoEditor from '@monaco-editor/react'
 import type { EditorProps, OnMount } from '@monaco-editor/react'
 import { createATA } from './Editor/ata.ts'
+import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 
 export interface EditorFile {
     name: string
@@ -17,6 +19,7 @@ interface Props {
 
 export default function Editor(props: Props) {
     const { file, onChange, options, isDarkMode } = props;
+    const { editorRef } = useContext(PlaygroundContext);
 
     // const code = `
     //     import './App.scss'
@@ -29,24 +32,22 @@ export default function Editor(props: Props) {
     //     }
     // `
 
-    // 编辑器加载完毕执行的回调
     const handleEditorMount: OnMount = (editor, monaco) => {
+        editorRef.current = editor;
+
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M, () => {
             editor.getAction('editor.action.formatDocument')?.run();
         })
 
-        // 兼容处理 jsx 语法高亮
         monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
             jsx: monaco.languages.typescript.JsxEmit.Preserve,
             esModuleInterop: true
         })
 
-        // 类型提示
         const ata = createATA((code, path) => {
             monaco.languages.typescript.typescriptDefaults.addExtraLib(code, `file://${path}`);
         })
 
-        // 监听编辑器内容变化，更新类型提示
         editor.onDidChangeModelContent(() => {
             ata(editor.getValue());
         })

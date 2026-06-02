@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import FileNameList from './FileNameList'
 import Editor from './Editor'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext.tsx'
@@ -21,21 +21,28 @@ export default function CodeEditor() {
     // }
 
     const { files, selectedFileName, setFiles, isDarkMode } = useContext(PlaygroundContext);
-    const file = files[selectedFileName];  // App.tsx 的文件对象
+    const file = files[selectedFileName];
 
-    // 编辑器内容变化时的回调
-    const onEditorChange = (value: string | undefined) => {
-        console.log('编辑器内容变化', value);
+    const onEditorChange = useCallback((value: string | undefined) => {
+        // console.log('编辑器内容变化', value);
+        setFiles(prevFiles => ({
+            ...prevFiles,
+            [selectedFileName]: {
+                ...prevFiles[selectedFileName],
+                value: value || '',
+            }
+        }));
+    }, [selectedFileName, setFiles]);
 
-        // 将 value 存在文件对象中
-        files[file.name].value = value || '';
-        setFiles({...files});
-    }
+    const debouncedChange = useMemo(
+        () => debounce(onEditorChange, 300),
+        [onEditorChange]
+    );
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDarkMode ? '#000' : '#fff'}}>
             <FileNameList/>
-            <Editor file={file} onChange={debounce(onEditorChange, 300)} isDarkMode={isDarkMode}/>
+            <Editor file={file} onChange={debouncedChange} isDarkMode={isDarkMode}/>
         </div>
     )
 }

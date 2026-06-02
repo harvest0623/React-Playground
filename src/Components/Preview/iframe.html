@@ -6,6 +6,30 @@
     <title>Document</title>
 </head>
 <body>
+    <script>
+        (function() {
+            function sendToParent(type, payload) {
+                window.parent.postMessage(Object.assign({ type: type }, payload), '*');
+            }
+            ['log', 'warn', 'error', 'info'].forEach(function(method) {
+                var original = console[method];
+                console[method] = function() {
+                    var args = Array.prototype.slice.call(arguments);
+                    sendToParent('console', { method: method, args: args.map(function(a) {
+                        try { return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a); }
+                        catch(e) { return String(a); }
+                    }) });
+                    if (original) original.apply(console, arguments);
+                };
+            });
+            window.onerror = function(msg, url, line, col, err) {
+                sendToParent('runtime-error', { message: String(msg), line: line, col: col, stack: err && err.stack });
+            };
+            window.addEventListener('unhandledrejection', function(e) {
+                sendToParent('runtime-error', { message: e.reason && e.reason.message ? e.reason.message : String(e.reason), stack: e.reason && e.reason.stack });
+            });
+        })();
+    </script>
     <script type="importmap"></script>
     <script type="module" id="appSrc"></script>
     <div id="root"></div>
