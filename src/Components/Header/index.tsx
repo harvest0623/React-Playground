@@ -1,14 +1,17 @@
 import { useContext, useState } from 'react'
 import logoSvg from './icons/logo.svg'
 import styles from './index.module.scss'
-import { downLoadFiles, formatCode, shareFiles } from '../../ReactPlayground/utils'
+import { downLoadFiles, exportAsHtml, formatCode, shareFiles } from '../../ReactPlayground/utils'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import DependencyManager from '../DependencyManager'
 
 export default function Header() {
     const {
         files, setFiles, selectedFileName, isDarkMode, toggleTheme,
-        undo, redo, isFullScreen, setIsFullScreen
+        undo, redo, isFullScreen, setIsFullScreen,
+        editorFontSize, setEditorFontSize,
+        showShortcuts, setShowShortcuts,
+        collabConnected,
     } = useContext(PlaygroundContext);
     const [showDeps, setShowDeps] = useState(false);
 
@@ -62,6 +65,26 @@ export default function Header() {
                     <i className={`iconfont ${isDarkMode ? 'icon-yueliang' : 'icon-taiyang'}`}></i>
                 </div>
 
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <div
+                        className={styles.iconButton}
+                        onClick={() => setEditorFontSize(Math.max(12, editorFontSize - 1))}
+                        style={{ width: 28, height: 28, fontSize: 16 }}
+                    >
+                        −
+                    </div>
+                    <span style={{ fontSize: 12, color: isDarkMode ? '#ccc' : '#333', minWidth: 36, textAlign: 'center' }}>
+                        {editorFontSize}px
+                    </span>
+                    <div
+                        className={styles.iconButton}
+                        onClick={() => setEditorFontSize(Math.min(24, editorFontSize + 1))}
+                        style={{ width: 28, height: 28, fontSize: 16 }}
+                    >
+                        +
+                    </div>
+                </div>
+
                 <div className={styles.iconButton} onClick={() => setIsFullScreen(!isFullScreen)}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
                         {isFullScreen ? (
@@ -104,6 +127,31 @@ export default function Header() {
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-xiazai" onClick={() => downLoadFiles(files)}></i>
                     <div className={styles.tooltip}>Download</div>
+                </div>
+
+                <div className={styles.iconButton} onClick={() => exportAsHtml(files)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                        <path d="M12 3v12"/>
+                        <path d="M8 11l4 4 4-4"/>
+                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+                    </svg>
+                    <div className={styles.tooltip}>Export HTML</div>
+                </div>
+
+                <div className={styles.iconButton} onClick={() => setShowShortcuts(!showShortcuts)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M6 8h.01"/>
+                        <path d="M10 8h.01"/>
+                        <path d="M14 8h.01"/>
+                        <path d="M18 8h.01"/>
+                        <path d="M6 12h.01"/>
+                        <path d="M10 12h.01"/>
+                        <path d="M14 12h.01"/>
+                        <path d="M18 12h.01"/>
+                        <path d="M8 16h8"/>
+                    </svg>
+                    <div className={styles.tooltip}>Shortcuts (Ctrl+Shift+?)</div>
                 </div>
 
                 <div className={styles.iconButton}>

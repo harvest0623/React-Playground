@@ -12,9 +12,14 @@ export interface CompileResult {
 
 const blobUrls = new Set<string>();
 
-function revokeOldBlobUrls() {
-    blobUrls.forEach(url => URL.revokeObjectURL(url));
+function revokeStaleBlobUrls(activeUrls: Set<string>) {
+    blobUrls.forEach(url => {
+        if (!activeUrls.has(url)) {
+            URL.revokeObjectURL(url);
+        }
+    });
     blobUrls.clear();
+    activeUrls.forEach(url => blobUrls.add(url));
 }
 
 function createBlobUrl(code: string): string {
@@ -54,8 +59,8 @@ function setCache(filename: string, code: string, blobUrl: string) {
     compileCache.set(filename, { hash, blobUrl });
 }
 
-function clearCache() {
-    compileCache.clear();
+function cleanCacheForFile(filename: string) {
+    compileCache.delete(filename);
 }
 
 function ensureReactImport(filename: string, code: string): string {
@@ -109,6 +114,7 @@ export const babelTransform = (filename: string, code: string, files: Files): Co
         setCache(filename, code, blobUrl);
         return { code: blobUrl, error: null, errorLine: null };
     } catch (error: unknown) {
+        cleanCacheForFile(filename);
         const message = error instanceof Error ? error.message : String(error);
         const lineMatch = message.match(/(\d+):(\d+)/);
         return {
@@ -120,28 +126,62 @@ export const babelTransform = (filename: string, code: string, files: Files): Co
 }
 
 export const compile = (files: Files): CompileResult => {
-    revokeOldBlobUrls();
-    clearCache();
+    const activeUrls = new Set<string>();
+
     const main = files[ENTRY_FILE_NAME];
     if (!main) {
+        revokeStaleBlobUrls(activeUrls);
         return { code: '', error: `Entry file "${ENTRY_FILE_NAME}" not found`, errorLine: null };
     }
-    return babelTransform(ENTRY_FILE_NAME, main.value, files);
+
+    const result = babelTransform(ENTRY_FILE_NAME, main.value, files);
+
+    compileCache.forEach((entry) => {
+        activeUrls.add(entry.blobUrl);
+    });
+
+    revokeStaleBlobUrls(activeUrls);
+
+    return result;
 }
 
 function getModuleFile(files: Files, modulepath: string) {
-    let moduleName = modulepath.split('./').pop() || '';
-    if (moduleName.includes('.')) {
-        const realModuleName = Object.keys(files).filter(key => {
-            return key.endsWith('.ts') || key.endsWith('.tsx') || key.endsWith('.js') || key.endsWith('.jsx');
-        }).find(key => {
-            return key.split('.').includes(moduleName);
-        })
-        if (realModuleName) {
-            moduleName = realModuleName;
+    const candidates = Object.keys(files);
+
+    for (const key of candidates) {
+        const noExt = key.replace(/\.(tsx?|jsx?)$/, '');
+        if (noExt === modulepath || key === modulepath) {
+            return files[key];
         }
     }
-    return files[moduleName];
+
+    const lastSegment = modulepath.split('/').pop() || modulepath;
+
+    if (lastSegment.includes('.')) {
+        const found = candidates.find(key => key === lastSegment);
+        if (found) return files[found];
+    }
+
+    const extensions = ['.tsx', '.ts', '.jsx', '.js'];
+    for (const ext of extensions) {
+        const withExt = lastSegment + ext;
+        const found = candidates.find(key => key === withExt);
+        if (found) return files[found];
+    }
+
+    const indexExtensions = ['/index.tsx', '/index.ts', '/index.jsx', '/index.js'];
+    for (const idx of indexExtensions) {
+        const indexCandidate = lastSegment + idx;
+        const found = candidates.find(key => key === indexCandidate);
+        if (found) return files[found];
+    }
+
+    if (lastSegment.includes('.')) {
+        const found = candidates.find(key => key.split('.').includes(lastSegment));
+        if (found) return files[found];
+    }
+
+    return undefined;
 }
 
 const JsonToJS = (file: EditorFile) => {
@@ -149,8 +189,16 @@ const JsonToJS = (file: EditorFile) => {
     return createBlobUrl(js);
 }
 
+function escapeForTemplateLiteral(str: string): string {
+    return str
+        .replace(/\\/g, '\\\\')
+        .replace(/`/g, '\\`')
+        .replace(/\$/g, '\\$');
+}
+
 const CssToJS = (file: EditorFile) => {
     const safeId = file.name.replace(/[^a-zA-Z0-9]/g, '_');
+    const escapedCss = escapeForTemplateLiteral(file.value);
     const js = `
     (() => {
         const id = 'style_${safeId}';
@@ -159,7 +207,7 @@ const CssToJS = (file: EditorFile) => {
         const stylesheet = document.createElement('style');
         stylesheet.setAttribute('id', id);
         document.head.appendChild(stylesheet);
-        const styles = document.createTextNode(\`${file.value}\`);
+        const styles = document.createTextNode(\`${escapedCss}\`);
         stylesheet.appendChild(styles);
     })()
     `;

@@ -4,8 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 </head>
-<body>
+<body style="margin:0;background-color:__BG_COLOR__">
+    <script>
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'css-update') {
+                var id = 'style_' + e.data.filename.replace(/[^a-zA-Z0-9]/g, '_');
+                var existing = document.getElementById(id);
+                if (existing) {
+                    var styleEl = existing.tagName === 'STYLE' ? existing : existing.querySelector('style');
+                    if (styleEl) {
+                        styleEl.textContent = e.data.content;
+                    }
+                }
+            }
+        });
+    </script>
     <script>
         (function() {
             function sendToParent(type, payload) {

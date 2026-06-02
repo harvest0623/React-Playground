@@ -1,16 +1,17 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { compile } from './compiler.ts'
-import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext.tsx'
+import { PlaygroundContext, type Files } from '../../ReactPlayground/PlaygroundContext.tsx'
 import iframeRaw from './iframe.html?raw'
 import { IMPORT_MAP_FILE_NAME } from '../../ReactPlayground/files.ts'
 
 export default function Preview() {
     const {
-        files, isDarkMode, setCompileError,
+        files, isDarkMode, setCompileError, setErrorLine,
         setRuntimeError, addConsoleLog, clearConsoleLogs
     } = useContext(PlaygroundContext);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const refreshRef = useRef(0);
+    const prevFilesRef = useRef<Files>(files);
     const [, forceUpdate] = useState(0);
 
     const handleMessage = useCallback((e: MessageEvent) => {
@@ -30,26 +31,61 @@ export default function Preview() {
 
     const compileResult = useMemo(() => compile(files), [files]);
 
+    useEffect(() => {
+        const prev = prevFilesRef.current;
+        if (prev === files) return;
+
+        const cssChanges: { filename: string; content: string }[] = [];
+        let hasNonCssChange = false;
+
+        const allKeys = new Set([...Object.keys(prev), ...Object.keys(files)]);
+        for (const key of allKeys) {
+            if (prev[key]?.value !== files[key]?.value) {
+                if (key.endsWith('.css')) {
+                    cssChanges.push({ filename: key, content: files[key]?.value ?? '' });
+                } else {
+                    hasNonCssChange = true;
+                }
+            }
+        }
+
+        prevFilesRef.current = files;
+
+        if (cssChanges.length > 0 && !hasNonCssChange && iframeRef.current?.contentWindow) {
+            for (const change of cssChanges) {
+                iframeRef.current.contentWindow.postMessage({
+                    type: 'css-update',
+                    filename: change.filename,
+                    content: change.content,
+                }, '*');
+            }
+        }
+    }, [files]);
+
+    useEffect(() => {
+        setCompileError(compileResult.error);
+        setErrorLine(compileResult.errorLine);
+        clearConsoleLogs();
+        setRuntimeError(null);
+    }, [compileResult, setCompileError, setErrorLine, clearConsoleLogs, setRuntimeError]);
+
     const iframeUrl = useMemo(() => {
         if (compileResult.error) return '';
         const moduleScript = compileResult.code
             ? `import '${compileResult.code}';`
             : '';
-        const res = iframeRaw.replace(
-            '<script type="importmap"></script>',
-            `<script type="importmap">${files[IMPORT_MAP_FILE_NAME].value}</script>`,
-        ).replace(
-            '<script type="module" id="appSrc"></script>',
-            `<script type="module" id="appSrc">${moduleScript}</script>`,
-        );
+        const bgColor = isDarkMode ? '#1e1e1e' : '#ffffff';
+        const res = iframeRaw
+            .replace('__BG_COLOR__', bgColor)
+            .replace(
+                '<script type="importmap"></script>',
+                `<script type="importmap">${files[IMPORT_MAP_FILE_NAME].value}</script>`,
+            ).replace(
+                '<script type="module" id="appSrc"></script>',
+                `<script type="module" id="appSrc">${moduleScript}</script>`,
+            );
         return URL.createObjectURL(new Blob([res], { type: 'text/html' }));
-    }, [compileResult, files]);
-
-    useEffect(() => {
-        setCompileError(compileResult.error);
-        clearConsoleLogs();
-        setRuntimeError(null);
-    }, [compileResult, setCompileError, clearConsoleLogs, setRuntimeError]);
+    }, [compileResult, files, isDarkMode]);
 
     const handleRefresh = useCallback(() => {
         refreshRef.current += 1;
@@ -97,7 +133,7 @@ export default function Preview() {
                     External
                 </span>
             </div>
-            <div style={{ flex: 1, backgroundColor: isDarkMode ? '#fff' : '#000', position: 'relative' }}>
+            <div style={{ flex: 1, backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff', position: 'relative' }}>
                 <iframe ref={iframeRef} src={iframeUrl} style={{ height: '100%', width: '100%', border: 'none', padding: 0 }} />
                 {!iframeUrl && !compileResult.error && (
                     <div style={{

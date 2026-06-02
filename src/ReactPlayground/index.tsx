@@ -1,16 +1,19 @@
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import Header from '../Components/Header'
 import FileExplorer from '../Components/FileExplorer'
 import CodeEditor from '../Components/CodeEditor'
 import Preview from '../Components/Preview'
 import ErrorOverlay from '../Components/ErrorOverlay'
 import ConsolePanel from '../Components/ConsolePanel'
+import ShortcutsPanel from '../Components/ShortcutsPanel'
+import FileSearch from '../Components/FileSearch'
 import { PlaygroundContext } from './PlaygroundContext'
 
 export default function ReactPlayground() {
-    const { isDarkMode, isFullScreen } = useContext(PlaygroundContext);
+    const { isDarkMode, isFullScreen, showFileSearch, setShowFileSearch } = useContext(PlaygroundContext);
+    const [fileSearchKey, setFileSearchKey] = useState(0);
 
     if (isFullScreen) {
         return (
@@ -61,6 +64,8 @@ export default function ReactPlayground() {
                     </Allotment.Pane>
                 </Allotment>
             </div>
+            <ShortcutsPanel />
+            <FileSearch key={fileSearchKey} open={showFileSearch} onClose={() => { setShowFileSearch(false); setFileSearchKey(k => k + 1); }} isDarkMode={isDarkMode} />
         </div>
     )
 }
