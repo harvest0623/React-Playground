@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface Props {
     open: boolean
@@ -56,6 +57,7 @@ function HighlightedName({ name, indices }: { name: string; indices: Set<number>
 
 export default function FileSearch({ open, onClose, isDarkMode }: Props) {
     const { files, selectedFileName, setSelectedFileName } = useContext(PlaygroundContext)
+    const { t } = useLanguage()
     const [query, setQuery] = useState('')
     const [activeIndex, setActiveIndex] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -153,7 +155,7 @@ export default function FileSearch({ open, onClose, isDarkMode }: Props) {
                             setActiveIndex(0)
                         }}
                         onKeyDown={handleKeyDown}
-                        placeholder="Search files..."
+                        placeholder={t('searchFiles')}
                         style={{
                             width: '100%',
                             padding: '8px 10px',
@@ -172,7 +174,7 @@ export default function FileSearch({ open, onClose, isDarkMode }: Props) {
                             color: isDarkMode ? '#666' : '#999',
                             fontSize: 13,
                         }}>
-                            No matching files
+                            {t('noFilesFound')}
                         </div>
                     )}
                     {filteredFiles.map((item, index) => {

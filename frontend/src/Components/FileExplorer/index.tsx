@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 function getFileTypeLabel(name: string): string {
     if (name.endsWith('.tsx') || name.endsWith('.jsx')) return 'TSX'
@@ -59,6 +60,7 @@ interface NewFileDialogProps {
 function NewFileDialog({ open, onClose, onConfirm, isDarkMode }: NewFileDialogProps) {
     const [name, setName] = useState('')
     const inputRef = useRef<HTMLInputElement>(null)
+    const { t } = useLanguage()
 
     useEffect(() => {
         if (open && inputRef.current) {
@@ -87,7 +89,7 @@ function NewFileDialog({ open, onClose, onConfirm, isDarkMode }: NewFileDialogPr
                 style={{ backgroundColor: isDarkMode ? '#252526' : '#fff', color: isDarkMode ? '#ccc' : '#333', borderRadius: 6, padding: 20, width: 360, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
                 onClick={e => e.stopPropagation()}
             >
-                <div style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 12 }}>New File</div>
+                <div style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 12 }}>{t('newFile')}</div>
                 <input
                     ref={inputRef}
                     value={name}
@@ -100,13 +102,13 @@ function NewFileDialog({ open, onClose, onConfirm, isDarkMode }: NewFileDialogPr
                     style={{ width: '100%', padding: '8px 10px', border: isDarkMode ? '1px solid #444' : '1px solid #ddd', borderRadius: 4, backgroundColor: isDarkMode ? '#3c3c3c' : '#fff', color: isDarkMode ? '#ccc' : '#333', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
                 />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-                    <button onClick={onClose} style={btnStyle}>Cancel</button>
+                    <button onClick={onClose} style={btnStyle}>{t('cancel')}</button>
                     <button
                         onClick={() => { if (name.trim()) { onConfirm(name.trim()); onClose() } }}
                         disabled={!name.trim()}
                         style={{ ...btnStyle, border: 'none', backgroundColor: name.trim() ? '#0078d4' : '#555', color: '#fff', cursor: name.trim() ? 'pointer' : 'default' }}
                     >
-                        Create
+                        {t('create')}
                     </button>
                 </div>
             </div>
@@ -116,6 +118,7 @@ function NewFileDialog({ open, onClose, onConfirm, isDarkMode }: NewFileDialogPr
 
 export default function FileExplorer() {
     const { files, selectedFileName, setSelectedFileName, addFile, removeFile, isDarkMode } = useContext(PlaygroundContext)
+    const { t } = useLanguage()
     const [collapsed, setCollapsed] = useState(false)
     const [showNewFile, setShowNewFile] = useState(false)
     const [isDragging, setIsDragging] = useState(false)
@@ -203,10 +206,10 @@ export default function FileExplorer() {
     if (collapsed) {
         return (
             <div style={{ width: 36, minWidth: 36, height: '100%', backgroundColor: isDarkMode ? '#252526' : '#f3f3f3', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 8, gap: 8 }}>
-                <span onClick={() => setCollapsed(false)} style={{ cursor: 'pointer', fontSize: 16, color: isDarkMode ? '#888' : '#666' }} title="Expand Explorer">
+                <span onClick={() => setCollapsed(false)} style={{ cursor: 'pointer', fontSize: 16, color: isDarkMode ? '#888' : '#666' }} title={t('expand')}>
                     &#9654;
                 </span>
-                <span onClick={() => { setCollapsed(false); setSearchMode(true) }} style={{ cursor: 'pointer', fontSize: 14, color: isDarkMode ? '#888' : '#666' }} title="Search Files">
+                <span onClick={() => { setCollapsed(false); setSearchMode(true) }} style={{ cursor: 'pointer', fontSize: 14, color: isDarkMode ? '#888' : '#666' }} title={t('search')}>
                     &#128269;
                 </span>
             </div>
@@ -234,8 +237,8 @@ export default function FileExplorer() {
             onDrop={handleDrop}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 12px', textTransform: 'uppercase', fontSize: 11, fontWeight: 'bold', letterSpacing: 0.5, color: isDarkMode ? '#999' : '#666', borderBottom: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0', flexShrink: 0 }}>
-                <span>{searchMode ? 'Search' : 'Explorer'}</span>
-                <span onClick={() => setCollapsed(true)} style={{ cursor: 'pointer', fontSize: 14 }} title="Collapse">
+                <span>{searchMode ? t('search') : t('explorer')}</span>
+                <span onClick={() => setCollapsed(true)} style={{ cursor: 'pointer', fontSize: 14 }} title={t('collapse')}>
                     &#9664;
                 </span>
             </div>
@@ -250,13 +253,13 @@ export default function FileExplorer() {
                             onKeyDown={e => {
                                 if (e.key === 'Escape') { setSearchMode(false); setSearchQuery('') }
                             }}
-                            placeholder="Search files..."
+                            placeholder={t('searchFiles')}
                             style={{ flex: 1, padding: '4px 8px', border: isDarkMode ? '1px solid #444' : '1px solid #ddd', borderRadius: 3, backgroundColor: isDarkMode ? '#3c3c3c' : '#fff', color: isDarkMode ? '#ccc' : '#333', fontSize: 12, outline: 'none' }}
                         />
                         <span
                             onClick={() => { setSearchMode(false); setSearchQuery('') }}
                             style={{ ...iconBtnStyle, fontSize: 15 }}
-                            title="Close Search"
+                            title={t('close')}
                         >
                             &#10005;
                         </span>
@@ -267,12 +270,12 @@ export default function FileExplorer() {
                 </div>
             ) : (
                 <div style={{ padding: '4px 8px', textTransform: 'uppercase', fontSize: 11, fontWeight: 'bold', color: isDarkMode ? '#999' : '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
-                    <span>Files</span>
+                    <span>{t('files')}</span>
                     <div style={{ display: 'flex', gap: 2 }}>
-                        <span onClick={() => setSearchMode(true)} style={iconBtnStyle} title="Search Files (Ctrl+P)">
+                        <span onClick={() => setSearchMode(true)} style={iconBtnStyle} title={t('searchFiles')}>
                             &#128269;
                         </span>
-                        <span onClick={() => setShowNewFile(true)} style={{ ...iconBtnStyle, fontSize: 16 }} title="New File">
+                        <span onClick={() => setShowNewFile(true)} style={{ ...iconBtnStyle, fontSize: 16 }} title={t('newFile')}>
                             +
                         </span>
                     </div>
@@ -313,7 +316,7 @@ export default function FileExplorer() {
                 })}
                 {searchMode && filteredNames.length === 0 && searchQuery && (
                     <div style={{ padding: '12px', textAlign: 'center', color: isDarkMode ? '#666' : '#999', fontSize: 12 }}>
-                        No matching files
+                        {t('noMatchingFiles')}
                     </div>
                 )}
             </div>
@@ -322,7 +325,7 @@ export default function FileExplorer() {
 
             {isDragging && (
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: isDarkMode ? 'rgba(0,120,212,0.1)' : 'rgba(0,120,212,0.05)', border: '2px dashed #0078d4', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, pointerEvents: 'none' }}>
-                    <span style={{ color: '#0078d4', fontSize: 14, fontWeight: 'bold' }}>Drop files here</span>
+                    <span style={{ color: '#0078d4', fontSize: 14, fontWeight: 'bold' }}>{t('dropFilesHere')}</span>
                 </div>
             )}
         </div>

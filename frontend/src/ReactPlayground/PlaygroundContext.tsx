@@ -3,6 +3,8 @@ import type { editor } from 'monaco-editor'
 import type { EditorFile } from '../Components/CodeEditor/Editor.tsx'
 import { getFileNameLanguage, restoreFilesFromUrl } from './utils.ts'
 import { initFiles } from './files.ts'
+import { saveFiles, loadFiles, clearFiles } from './storage.ts'
+import { getHistory, addHistoryEntry, clearHistory, type VersionEntry } from './history.ts'
 
 export interface Files {
     [key: string]: EditorFile
@@ -48,6 +50,14 @@ export interface PlaygroundContext {
     setShowFileSearch: (v: boolean) => void,
     collaborationMode: boolean,
     setCollaborationMode: (v: boolean) => void,
+    clearStorage: () => void,
+    lastSaved: Date | null,
+    versionHistory: VersionEntry[],
+    saveVersion: (description: string) => void,
+    restoreVersion: (id: number) => void,
+    clearVersionHistory: () => void,
+    showHistory: boolean,
+    setShowHistory: (v: boolean) => void,
 }
 
 // files = {
@@ -81,7 +91,13 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
     const [showFileSearch, setShowFileSearch] = useState<boolean>(false);
     const [collaborationMode, setCollaborationMode] = useState<boolean>(false);
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [versionHistory, setVersionHistory] = useState<VersionEntry[]>(() => getHistory());
+    const [showHistory, setShowHistory] = useState<boolean>(false);
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const filesRef = useRef<Files>(files);
+    const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const historyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const undo = useCallback(() => {
         editorRef.current?.trigger('keyboard', 'undo', null);
@@ -157,6 +173,33 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
         setConsoleLogs([]);
     }, []);
 
+    const clearStorage = useCallback(async () => {
+        try {
+            await clearFiles();
+            setLastSaved(null);
+            setFiles(initFiles);
+        } catch (e) {
+            console.error('Failed to clear storage:', e);
+        }
+    }, []);
+
+    const saveVersion = useCallback((description: string) => {
+        const history = addHistoryEntry(filesRef.current, description);
+        setVersionHistory(history);
+    }, []);
+
+    const restoreVersion = useCallback((id: number) => {
+        const entry = versionHistory.find(e => e.id === id);
+        if (entry) {
+            setFiles(entry.files);
+        }
+    }, [versionHistory]);
+
+    const clearVersionHistory = useCallback(() => {
+        clearHistory();
+        setVersionHistory([]);
+    }, []);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.shiftKey && e.key === '?') {
@@ -171,6 +214,47 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
+
+    useEffect(() => {
+        loadFiles().then(savedFiles => {
+            if (savedFiles) {
+                setFiles(savedFiles);
+            }
+        }).catch(e => {
+            console.error('Failed to load files:', e);
+        });
+    }, []);
+
+    useEffect(() => {
+        filesRef.current = files;
+        if (saveTimerRef.current) {
+            clearTimeout(saveTimerRef.current);
+        }
+        saveTimerRef.current = setTimeout(() => {
+            saveFiles(files).then(() => {
+                setLastSaved(new Date());
+            }).catch(e => {
+                console.error('Failed to save files:', e);
+            });
+        }, 500);
+
+        if (historyTimerRef.current) {
+            clearTimeout(historyTimerRef.current);
+        }
+        historyTimerRef.current = setTimeout(() => {
+            const history = addHistoryEntry(files, 'Auto-save');
+            setVersionHistory(history);
+        }, 2000);
+
+        return () => {
+            if (saveTimerRef.current) {
+                clearTimeout(saveTimerRef.current);
+            }
+            if (historyTimerRef.current) {
+                clearTimeout(historyTimerRef.current);
+            }
+        };
+    }, [files]);
 
     return (
         <PlaygroundContext.Provider
@@ -208,6 +292,14 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
                 setShowFileSearch,
                 collaborationMode,
                 setCollaborationMode,
+                clearStorage,
+                lastSaved,
+                versionHistory,
+                saveVersion,
+                restoreVersion,
+                clearVersionHistory,
+                showHistory,
+                setShowHistory,
             }}
         >
             {children}

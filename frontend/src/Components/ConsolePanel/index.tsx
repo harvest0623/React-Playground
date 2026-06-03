@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 const METHOD_COLORS: Record<string, string> = {
     log: '#ccc',
@@ -19,6 +20,7 @@ type FilterType = 'all' | 'log' | 'info' | 'warn' | 'error';
 
 export default function ConsolePanel() {
     const { consoleLogs, clearConsoleLogs, isDarkMode } = useContext(PlaygroundContext);
+    const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const [filter, setFilter] = useState<FilterType>('all');
     const [collapsed, setCollapsed] = useState(false);
@@ -77,7 +79,7 @@ export default function ConsolePanel() {
                     >
                         {collapsed ? '\u25B6' : '\u25BC'}
                     </span>
-                    <span>Console</span>
+                    <span>{t('console')}</span>
                     <span style={{ color: isDarkMode ? '#666' : '#aaa', fontSize: 11 }}>({consoleLogs.length})</span>
                 </div>
 
@@ -114,9 +116,9 @@ export default function ConsolePanel() {
                             cursor: 'pointer', marginLeft: 4, padding: '1px 6px',
                             borderRadius: 3, fontSize: 10, color: isDarkMode ? '#888' : '#999',
                         }}
-                        title="Copy logs"
+                        title={t('copy')}
                     >
-                        Copy
+                        {t('copy')}
                     </span>
 
                     <span
@@ -126,7 +128,7 @@ export default function ConsolePanel() {
                             borderRadius: 3, fontSize: 10, color: isDarkMode ? '#888' : '#999',
                         }}
                     >
-                        Clear
+                        {t('clear')}
                     </span>
                 </div>
             </div>
@@ -135,7 +137,7 @@ export default function ConsolePanel() {
                 <div ref={containerRef} style={{ flex: 1, overflow: 'auto', padding: '4px 0' }}>
                     {filteredLogs.length === 0 && (
                         <div style={{ padding: '8px 12px', color: isDarkMode ? '#555' : '#aaa' }}>
-                            {consoleLogs.length === 0 ? 'No console output' : 'No matching logs'}
+                            {consoleLogs.length === 0 ? t('noConsoleOutput') : t('noMatchingLogs')}
                         </div>
                     )}
                     {filteredLogs.map((log) => (

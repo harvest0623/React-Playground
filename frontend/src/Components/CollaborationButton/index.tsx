@@ -2,9 +2,11 @@ import { useContext, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import { useCollaboration } from '../../Collaboration/CollaborationContext'
 import NameDialog from '../CollaborationPanel/NameDialog'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 export default function CollaborationButton() {
     const { isDarkMode } = useContext(PlaygroundContext)
+    const { t } = useLanguage()
     const {
         roomId, connected,
         setShowPanel,
@@ -131,7 +133,7 @@ export default function CollaborationButton() {
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                <span>{isCollaborating ? '协作中' : '协作'}</span>
+                <span>{isCollaborating ? t('collaborating') : t('collaborate')}</span>
                 {isCollaborating && (
                     <span style={{
                         fontSize: 11,
@@ -156,7 +158,7 @@ export default function CollaborationButton() {
                     opacity: 0,
                     transition: 'opacity 0.2s',
                 }}>
-                    {isCollaborating ? '打开协作面板' : '开始协作'}
+                    {isCollaborating ? t('openCollabPanel') : t('startCollab')}
                 </div>
             </div>
 
@@ -175,21 +177,21 @@ export default function CollaborationButton() {
                             fontWeight: 600,
                             color: isDarkMode ? '#fff' : '#1a1a1a',
                         }}>
-                            创建协作房间
+                            {t('createCollabRoom')}
                         </h3>
                         <p style={{
                             margin: '0 0 20px',
                             fontSize: 13,
                             color: isDarkMode ? '#888' : '#666',
                         }}>
-                            输入房间名称以创建新的协作会话
+                            {t('createRoomDesc')}
                         </p>
                         <input
                             type="text"
                             value={roomNameInput}
                             onChange={e => setRoomNameInput(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleCreateRoom()}
-                            placeholder="房间名称"
+                            placeholder={t('roomName')}
                             autoFocus
                             style={inputStyle}
                         />
@@ -200,18 +202,18 @@ export default function CollaborationButton() {
                             marginTop: 16,
                         }}>
                             <span
-                                onClick={() => { setShowCreateDialog(false); setShowJoinDialog(true); }}
+                                onClick={() => { setShowCreateDialog(false); setShowJoinDialog(true) }}
                                 style={{
                                     fontSize: 13,
                                     color: '#61afef',
                                     cursor: 'pointer',
                                 }}
                             >
-                                加入已有房间 →
+                                {t('joinExistingRoom')}
                             </span>
                             <div style={{ display: 'flex', gap: 10 }}>
                                 <button onClick={() => setShowCreateDialog(false)} style={btnSecondary}>
-                                    取消
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={handleCreateRoom}
@@ -222,7 +224,7 @@ export default function CollaborationButton() {
                                         cursor: roomNameInput.trim() ? 'pointer' : 'not-allowed',
                                     }}
                                 >
-                                    创建
+                                    {t('create')}
                                 </button>
                             </div>
                         </div>
@@ -239,21 +241,21 @@ export default function CollaborationButton() {
                             fontWeight: 600,
                             color: isDarkMode ? '#fff' : '#1a1a1a',
                         }}>
-                            加入协作房间
+                            {t('joinCollabRoom')}
                         </h3>
                         <p style={{
                             margin: '0 0 20px',
                             fontSize: 13,
                             color: isDarkMode ? '#888' : '#666',
                         }}>
-                            输入房间 ID 加入已有的协作会话
+                            {t('joinRoomDesc')}
                         </p>
                         <input
                             type="text"
                             value={joinRoomIdInput}
                             onChange={e => setJoinRoomIdInput(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleJoinRoom()}
-                            placeholder="房间 ID"
+                            placeholder={t('roomId')}
                             autoFocus
                             style={inputStyle}
                         />
@@ -264,18 +266,18 @@ export default function CollaborationButton() {
                             marginTop: 16,
                         }}>
                             <span
-                                onClick={() => { setShowJoinDialog(false); setShowCreateDialog(true); }}
+                                onClick={() => { setShowJoinDialog(false); setShowCreateDialog(true) }}
                                 style={{
                                     fontSize: 13,
                                     color: '#61afef',
                                     cursor: 'pointer',
                                 }}
                             >
-                                ← 创建新房间
+                                {t('createNewRoom')}
                             </span>
                             <div style={{ display: 'flex', gap: 10 }}>
                                 <button onClick={() => setShowJoinDialog(false)} style={btnSecondary}>
-                                    取消
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={handleJoinRoom}
@@ -286,7 +288,7 @@ export default function CollaborationButton() {
                                         cursor: joinRoomIdInput.trim() ? 'pointer' : 'not-allowed',
                                     }}
                                 >
-                                    加入
+                                    {t('joinRoom')}
                                 </button>
                             </div>
                         </div>

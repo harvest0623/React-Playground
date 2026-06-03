@@ -3,7 +3,9 @@ import ReactPlayground from './ReactPlayground'
 import './App.scss'
 import { PlaygroundProvider, PlaygroundContext } from './ReactPlayground/PlaygroundContext.tsx'
 import TemplateSelector from './Components/TemplateSelector'
+import HistoryPanel from './Components/HistoryPanel'
 import { useContext } from 'react'
+import { LanguageProvider } from './i18n/LanguageContext'
 
 function AppContent() {
     const { isDarkMode, setFiles } = useContext(PlaygroundContext)
@@ -21,14 +23,17 @@ function AppContent() {
                 isDarkMode={isDarkMode}
             />
             <ReactPlayground />
+            <HistoryPanel />
         </>
     )
 }
 
 export default function App() {
     return (
-        <PlaygroundProvider>
-            <AppContent />
-        </PlaygroundProvider>
+        <LanguageProvider>
+            <PlaygroundProvider>
+                <AppContent />
+            </PlaygroundProvider>
+        </LanguageProvider>
     )
 }

@@ -1,14 +1,16 @@
 import { useContext, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 export default function ErrorOverlay() {
     const { compileError, runtimeError, isDarkMode } = useContext(PlaygroundContext);
+    const { t } = useLanguage();
     const [collapsed, setCollapsed] = useState(false);
     const error = compileError || runtimeError;
 
     if (!error) return null;
 
-    const errorType = compileError ? 'Compile Error' : 'Runtime Error';
+    const errorType = compileError ? t('compilationError') : t('runtimeError');
     const displayError = error.replace(/^Error:\s*/, '').replace(/^SyntaxError:\s*/, '');
 
     return (

@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import { IMPORT_MAP_FILE_NAME } from '../../ReactPlayground/files'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface Props {
     open: boolean;
@@ -20,6 +21,7 @@ const POPULAR_PACKAGES = [
 
 export default function DependencyManager({ open, onClose }: Props) {
     const { files, setFiles, isDarkMode } = useContext(PlaygroundContext);
+    const { t } = useLanguage();
     const [packageName, setPackageName] = useState('');
     const [version, setVersion] = useState('');
     const [loading, setLoading] = useState(false);
@@ -124,7 +126,7 @@ export default function DependencyManager({ open, onClose }: Props) {
                 onClick={e => e.stopPropagation()}
             >
                 <div style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 16 }}>
-                    Dependencies
+                    {t('dependencies')}
                 </div>
 
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -160,7 +162,7 @@ export default function DependencyManager({ open, onClose }: Props) {
                             fontSize: 14, fontWeight: 'bold',
                         }}
                     >
-                        {loading ? '...' : 'Add'}
+                        {loading ? '...' : t('add')}
                     </button>
                 </div>
 
@@ -197,7 +199,7 @@ export default function DependencyManager({ open, onClose }: Props) {
                     {showPopular && (
                         <div style={{ padding: '8px 0' }}>
                             <div style={{ fontSize: 11, color: isDarkMode ? '#666' : '#999', padding: '0 0 4px', fontWeight: 'bold' }}>
-                                POPULAR PACKAGES
+                                {t('hotPackages')}
                             </div>
                             {POPULAR_PACKAGES.filter(p => !currentMap.imports?.[p.name]).map(pkg => (
                                 <div
@@ -237,7 +239,7 @@ export default function DependencyManager({ open, onClose }: Props) {
                             color: isDarkMode ? '#ccc' : '#333', cursor: 'pointer', fontSize: 13,
                         }}
                     >
-                        Close
+                        {t('close')}
                     </button>
                 </div>
             </div>

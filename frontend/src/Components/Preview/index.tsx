@@ -3,12 +3,14 @@ import { compile } from './compiler.ts'
 import { PlaygroundContext, type Files } from '../../ReactPlayground/PlaygroundContext.tsx'
 import iframeRaw from './iframe.html?raw'
 import { IMPORT_MAP_FILE_NAME } from '../../ReactPlayground/files.ts'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 export default function Preview() {
     const {
         files, isDarkMode, setCompileError, setErrorLine,
         setRuntimeError, addConsoleLog, clearConsoleLogs
     } = useContext(PlaygroundContext);
+    const { t } = useLanguage();
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const refreshRef = useRef(0);
     const prevFilesRef = useRef<Files>(files);
@@ -171,9 +173,9 @@ export default function Preview() {
                         cursor: 'pointer', fontSize: 11, color: isDarkMode ? '#888' : '#999',
                         padding: '2px 6px', borderRadius: 3,
                     }}
-                    title="Refresh Preview"
+                    title={t('refresh')}
                 >
-                    Refresh
+                    {t('refresh')}
                 </span>
                 <span
                     onClick={handleToggleRecord}
@@ -182,9 +184,9 @@ export default function Preview() {
                         color: recording ? '#ff4444' : (isDarkMode ? '#888' : '#999'),
                         fontWeight: recording ? 'bold' : 'normal',
                     }}
-                    title={recording ? 'Stop Recording' : 'Record Preview'}
+                    title={recording ? t('stop') : t('record')}
                 >
-                    {recording ? 'Stop' : 'Record'}
+                    {recording ? t('stop') : t('record')}
                 </span>
                 <span
                     onClick={handleOpenExternal}
@@ -194,9 +196,9 @@ export default function Preview() {
                         color: iframeUrl ? (isDarkMode ? '#888' : '#999') : '#ccc',
                         padding: '2px 6px', borderRadius: 3,
                     }}
-                    title="Open in New Tab"
+                    title={t('external')}
                 >
-                    External
+                    {t('external')}
                 </span>
             </div>
             <div style={{ flex: 1, backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff', position: 'relative' }}>
@@ -220,7 +222,7 @@ export default function Preview() {
                         transform: 'translate(-50%, -50%)',
                         color: isDarkMode ? '#666' : '#999', fontSize: 14,
                     }}>
-                        Compiling...
+                        {t('compiling')}
                     </div>
                 )}
             </div>

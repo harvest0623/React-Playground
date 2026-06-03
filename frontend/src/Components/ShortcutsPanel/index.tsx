@@ -1,17 +1,19 @@
 import { useContext, useEffect } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
-const shortcuts = [
-    { keys: 'Ctrl+Z', action: 'Undo' },
-    { keys: 'Ctrl+Shift+Z', action: 'Redo' },
-    { keys: 'Ctrl+M', action: 'Format Code' },
-    { keys: 'Ctrl+S', action: 'Save (prevented)' },
-    { keys: 'Ctrl+P', action: 'Quick File Switch' },
-    { keys: 'Escape', action: 'Close Panel' },
+const shortcuts: { keys: string; actionZh: string; actionEn: string }[] = [
+    { keys: 'Ctrl+Z', actionZh: '撤销', actionEn: 'Undo' },
+    { keys: 'Ctrl+Shift+Z', actionZh: '重做', actionEn: 'Redo' },
+    { keys: 'Ctrl+M', actionZh: '格式化', actionEn: 'Format' },
+    { keys: 'Ctrl+S', actionZh: '保存（已拦截）', actionEn: 'Save (prevented)' },
+    { keys: 'Ctrl+P', actionZh: '快速切换文件', actionEn: 'Quick File Switch' },
+    { keys: 'Escape', actionZh: '关闭面板', actionEn: 'Close Panel' },
 ]
 
 export default function ShortcutsPanel() {
     const { showShortcuts, setShowShortcuts, isDarkMode } = useContext(PlaygroundContext)
+    const { t, locale } = useLanguage()
 
     useEffect(() => {
         if (!showShortcuts) return
@@ -41,7 +43,7 @@ export default function ShortcutsPanel() {
                 onClick={e => e.stopPropagation()}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                    <span style={{ fontSize: 16, fontWeight: 'bold' }}>Keyboard Shortcuts</span>
+                    <span style={{ fontSize: 16, fontWeight: 'bold' }}>{t('keyboardShortcuts')}</span>
                     <span
                         onClick={() => setShowShortcuts(false)}
                         style={{ cursor: 'pointer', fontSize: 20, color: isDarkMode ? '#888' : '#666', lineHeight: 1, padding: '0 4px' }}
@@ -53,7 +55,7 @@ export default function ShortcutsPanel() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px' }}>
                     {shortcuts.map(s => (
                         <div key={s.keys} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                            <span style={{ fontSize: 13, color: isDarkMode ? '#aaa' : '#555' }}>{s.action}</span>
+                            <span style={{ fontSize: 13, color: isDarkMode ? '#aaa' : '#555' }}>{locale === 'zh' ? s.actionZh : s.actionEn}</span>
                             <span style={{
                                 fontSize: 12,
                                 padding: '3px 8px',

@@ -5,6 +5,7 @@ import { downLoadFiles, exportAsHtml, formatCode, shareFiles } from '../../React
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import DependencyManager from '../DependencyManager'
 import CollaborationButton from '../CollaborationButton'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 export default function Header() {
     const {
@@ -12,7 +13,10 @@ export default function Header() {
         undo, redo, isFullScreen, setIsFullScreen,
         editorFontSize, setEditorFontSize,
         showShortcuts, setShowShortcuts,
+        clearStorage, lastSaved,
+        showHistory, setShowHistory,
     } = useContext(PlaygroundContext);
+    const { t, locale, setLocale } = useLanguage();
     const [showDeps, setShowDeps] = useState(false);
     const [showDownloadMenu, setShowDownloadMenu] = useState(false);
     const downloadMenuRef = useRef<HTMLDivElement>(null);
@@ -44,7 +48,7 @@ export default function Header() {
                         <path d="M3 10l4-4"/>
                         <path d="M3 10l4 4"/>
                     </svg>
-                    <div className={styles.tooltip}>Undo (Ctrl+Z)</div>
+                    <div className={styles.tooltip}>{t('undo')} (Ctrl+Z)</div>
                 </div>
 
                 <div className={styles.iconButton} onClick={redo}>
@@ -53,7 +57,7 @@ export default function Header() {
                         <path d="M21 10l-4-4"/>
                         <path d="M21 10l-4 4"/>
                     </svg>
-                    <div className={styles.tooltip}>Redo (Ctrl+Shift+Z)</div>
+                    <div className={styles.tooltip}>{t('redo')} (Ctrl+Shift+Z)</div>
                 </div>
 
                 <div className={styles.iconButton} onClick={async () => {
@@ -73,11 +77,45 @@ export default function Header() {
                         <path d="M21 14H3"/>
                         <path d="M17 18H3"/>
                     </svg>
-                    <div className={styles.tooltip}>Format (Ctrl+M)</div>
+                    <div className={styles.tooltip}>{t('format')} (Ctrl+M)</div>
                 </div>
 
                 <div className={styles.themeToggle} onClick={toggleTheme}>
                     <i className={`iconfont ${isDarkMode ? 'icon-yueliang' : 'icon-taiyang'}`}></i>
+                </div>
+
+                <div
+                    className={styles.iconButton}
+                    onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
+                    title={locale === 'zh' ? 'Switch to English' : '切换到中文'}
+                >
+                    <span style={{ fontSize: 12, fontWeight: 600 }}>
+                        {locale === 'zh' ? '中' : 'EN'}
+                    </span>
+                </div>
+
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        padding: '4px 8px',
+                        borderRadius: 6,
+                        fontSize: 12,
+                        color: lastSaved ? '#98c379' : '#e06c75',
+                        cursor: 'pointer',
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f5f5f5',
+                    }}
+                    onClick={clearStorage}
+                    title="点击清除存储并恢复默认文件"
+                >
+                    <div style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        backgroundColor: lastSaved ? '#98c379' : '#e06c75',
+                    }} />
+                    {lastSaved ? t('saved') : t('saved')}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -118,7 +156,7 @@ export default function Header() {
                             </>
                         )}
                     </svg>
-                    <div className={styles.tooltip}>{isFullScreen ? 'Exit Fullscreen' : 'Fullscreen'}</div>
+                    <div className={styles.tooltip}>{isFullScreen ? t('exitFullscreen') : t('fullscreen')}</div>
                 </div>
 
                 <div className={styles.iconButton} onClick={() => setShowDeps(true)}>
@@ -127,22 +165,22 @@ export default function Header() {
                         <path d="M2 17l10 5 10-5"/>
                         <path d="M2 12l10 5 10-5"/>
                     </svg>
-                    <div className={styles.tooltip}>Dependencies</div>
+                    <div className={styles.tooltip}>{t('dependencies')}</div>
                 </div>
 
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-fenxiang" onClick={() => {
                         const url = shareFiles(files);
                         navigator.clipboard.writeText(url);
-                        alert('Share link copied to clipboard!');
+                        alert(t('shareCopied'));
                     }}></i>
-                    <div className={styles.tooltip}>Share</div>
+                    <div className={styles.tooltip}>{t('share')}</div>
                 </div>
 
                 <div style={{ position: 'relative' }} ref={downloadMenuRef}>
                     <div className={styles.iconButton} onClick={() => setShowDownloadMenu(!showDownloadMenu)}>
                         <i className="iconfont icon-xiazai"></i>
-                        <div className={styles.tooltip}>Download</div>
+                        <div className={styles.tooltip}>{t('download')}</div>
                     </div>
                     {showDownloadMenu && (
                         <div style={{
@@ -161,7 +199,7 @@ export default function Header() {
                                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDarkMode ? '#3c3c3c' : '#f0f0f0')}
                                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                <span>📦</span> Export as ZIP
+                                <span>📦</span> {t('exportZip')}
                             </div>
                             <div
                                 onClick={() => { exportAsHtml(files); setShowDownloadMenu(false) }}
@@ -172,7 +210,7 @@ export default function Header() {
                                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDarkMode ? '#3c3c3c' : '#f0f0f0')}
                                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                <span>📄</span> Export as HTML
+                                <span>📄</span> {t('exportHtml')}
                             </div>
                         </div>
                     )}
@@ -191,14 +229,22 @@ export default function Header() {
                         <path d="M18 12h.01"/>
                         <path d="M8 16h8"/>
                     </svg>
-                    <div className={styles.tooltip}>Shortcuts (Ctrl+Shift+?)</div>
+                    <div className={styles.tooltip}>{t('shortcuts')} (Ctrl+Shift+?)</div>
                 </div>
 
                 <CollaborationButton />
 
+                <div className={styles.iconButton} onClick={() => setShowHistory(!showHistory)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    <div className={styles.tooltip}>{t('versionHistory')}</div>
+                </div>
+
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-github" onClick={() => window.open('https://github.com/harvest0623/React-Playground', '_blank')}></i>
-                    <div className={styles.tooltip}>GitHub</div>
+                    <div className={styles.tooltip}>{t('github')}</div>
                 </div>
             </div>
             <DependencyManager open={showDeps} onClose={() => setShowDeps(false)} />

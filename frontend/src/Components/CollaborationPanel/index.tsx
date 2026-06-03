@@ -1,9 +1,11 @@
 import { useContext, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import { useCollaboration, formatRelativeTime } from '../../Collaboration/CollaborationContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 export default function CollaborationPanel() {
     const { isDarkMode } = useContext(PlaygroundContext)
+    const { t } = useLanguage()
     const {
         showPanel, setShowPanel,
         connected, roomId, roomName, isOwner,
@@ -90,7 +92,7 @@ export default function CollaborationPanel() {
                     borderBottom: `1px solid ${border}`,
                 }}>
                     <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: text }}>
-                        实时协作
+                        {t('realTimeCollaboration')}
                     </h3>
                     <div
                         onClick={() => setShowPanel(false)}
@@ -115,7 +117,7 @@ export default function CollaborationPanel() {
                         marginBottom: 20,
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                            <span style={{ fontSize: 13, color: textSecondary }}>房间</span>
+                            <span style={{ fontSize: 13, color: textSecondary }}>{t('roomName')}</span>
                             <div style={{
                                 width: 8,
                                 height: 8,
@@ -124,7 +126,7 @@ export default function CollaborationPanel() {
                             }} />
                         </div>
                         <div style={{ fontSize: 15, fontWeight: 600, color: text, marginBottom: 4 }}>
-                            {roomName || '未命名房间'}
+                            {roomName || t('unnamedRoom')}
                         </div>
                         <div
                             onClick={() => {
@@ -146,7 +148,7 @@ export default function CollaborationPanel() {
 
                     <div style={{ marginBottom: 20 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: text, marginBottom: 10 }}>
-                            在线用户 ({collaborators.length})
+                            {t('onlineUsers')} ({collaborators.length})
                         </div>
                         {collaborators.map(user => (
                             <div key={user.id} style={{
@@ -172,7 +174,7 @@ export default function CollaborationPanel() {
                                     flex: 1,
                                 }}>
                                     {user.name}
-                                    {user.id === myUserId && ' (我)'}
+                                    {user.id === myUserId && t('me')}
                                 </span>
                                 <span style={{
                                     fontSize: 11,
@@ -188,7 +190,7 @@ export default function CollaborationPanel() {
                     {isOwner && (
                         <div style={{ marginBottom: 20 }}>
                             <div style={{ fontSize: 13, fontWeight: 600, color: text, marginBottom: 10 }}>
-                                权限管理
+                                {t('permissions')}
                             </div>
                             {collaborators.filter(c => c.id !== myUserId).map(user => (
                                 <div key={user.id} style={{
@@ -221,9 +223,9 @@ export default function CollaborationPanel() {
                                             cursor: 'pointer',
                                         }}
                                     >
-                                        <option value="edit">可编辑</option>
-                                        <option value="view">仅查看</option>
-                                        <option value="none">禁止</option>
+                                        <option value="edit">{t('editor')}</option>
+                                        <option value="view">{t('viewer')}</option>
+                                        <option value="none">{t('none')}</option>
                                     </select>
                                 </div>
                             ))}
@@ -232,14 +234,14 @@ export default function CollaborationPanel() {
 
                     <div style={{ marginBottom: 20 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: text, marginBottom: 10 }}>
-                            邀请用户
+                            {t('invite')}
                         </div>
                         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                             <input
                                 type="email"
                                 value={inviteEmail}
                                 onChange={e => setInviteEmail(e.target.value)}
-                                placeholder="输入邮箱地址"
+                                placeholder={t('inputEmail')}
                                 style={{
                                     flex: 1,
                                     padding: '8px 12px',
@@ -264,8 +266,8 @@ export default function CollaborationPanel() {
                                     cursor: 'pointer',
                                 }}
                             >
-                                <option value="edit">可编辑</option>
-                                <option value="view">仅查看</option>
+                                <option value="edit">{t('editor')}</option>
+                                <option value="view">{t('viewer')}</option>
                             </select>
                         </div>
                         <button
@@ -283,13 +285,13 @@ export default function CollaborationPanel() {
                                 fontWeight: 500,
                             }}
                         >
-                            发送邀请
+                            {t('sendInvite')}
                         </button>
                     </div>
 
                     <div style={{ marginBottom: 20 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: text, marginBottom: 10 }}>
-                            编辑历史
+                            {t('editHistory')}
                         </div>
                         <div
                             onClick={fetchHistory}
@@ -300,11 +302,11 @@ export default function CollaborationPanel() {
                                 marginBottom: 8,
                             }}
                         >
-                            刷新
+                            {t('refreshAction')}
                         </div>
                         {history.length === 0 ? (
                             <div style={{ fontSize: 12, color: textSecondary, padding: '8px 0' }}>
-                                暂无编辑记录
+                                {t('noEditHistory')}
                             </div>
                         ) : (
                             [...history].reverse().map((entry, i) => (
@@ -346,7 +348,7 @@ export default function CollaborationPanel() {
                             fontWeight: 500,
                         }}
                     >
-                        {copied ? '已复制 ✓' : '复制链接'}
+                        {copied ? t('copied') : t('copyLink')}
                     </button>
                     <button
                         onClick={leaveRoom}
@@ -362,7 +364,7 @@ export default function CollaborationPanel() {
                             fontWeight: 500,
                         }}
                     >
-                        退出协作
+                        {t('leaveRoom')}
                     </button>
                 </div>
             </div>

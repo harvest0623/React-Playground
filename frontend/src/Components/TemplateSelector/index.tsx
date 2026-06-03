@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { Files } from '../../ReactPlayground/PlaygroundContext'
 import { templates } from '../../ReactPlayground/templates'
 import styles from './index.module.scss'
+import { useLanguage, type TranslationKey } from '../../i18n/LanguageContext'
 
 interface Props {
     open: boolean
@@ -12,6 +13,25 @@ interface Props {
 
 export default function TemplateSelector(props: Props) {
     const { open, onClose, onSelect, isDarkMode } = props
+    const { t } = useLanguage()
+
+    const templateNameMap: Record<string, TranslationKey> = {
+        'Empty Project': 'emptyProject',
+        'Counter': 'counter',
+        'Todo List': 'todoList',
+        'Fetch Data': 'fetchData',
+        'CSS Demo': 'cssDemo',
+        'Multi-Component': 'multiComponent',
+    }
+
+    const templateDescMap: Record<string, TranslationKey> = {
+        'Empty Project': 'emptyProjectDesc',
+        'Counter': 'counterDesc',
+        'Todo List': 'todoListDesc',
+        'Fetch Data': 'fetchDataDesc',
+        'CSS Demo': 'cssDemoDesc',
+        'Multi-Component': 'multiComponentDesc',
+    }
 
     useEffect(() => {
         if (!open) return
@@ -36,9 +56,9 @@ export default function TemplateSelector(props: Props) {
                 onClick={e => e.stopPropagation()}
             >
                 <div className={styles.header}>
-                    <h2>Choose a Template</h2>
+                    <h2>{t('chooseTemplate')}</h2>
                     <button className={styles.skipBtn} onClick={onClose}>
-                        Skip
+                        {t('skip')}
                     </button>
                 </div>
                 <div className={styles.grid}>
@@ -49,8 +69,8 @@ export default function TemplateSelector(props: Props) {
                             onClick={() => handleSelect(template.files)}
                         >
                             <div className={styles.icon}>{template.icon}</div>
-                            <h3 className={styles.title}>{template.name}</h3>
-                            <p className={styles.description}>{template.description}</p>
+                            <h3 className={styles.title}>{t(templateNameMap[template.name]) || template.name}</h3>
+                            <p className={styles.description}>{t(templateDescMap[template.name]) || template.description}</p>
                             <pre className={styles.preview}>
                                 {getPreview(template.files)}
                             </pre>
