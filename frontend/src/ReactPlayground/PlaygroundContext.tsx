@@ -46,6 +46,8 @@ export interface PlaygroundContext {
     setShowShortcuts: (v: boolean) => void,
     showFileSearch: boolean,
     setShowFileSearch: (v: boolean) => void,
+    collaborationMode: boolean,
+    setCollaborationMode: (v: boolean) => void,
 }
 
 // files = {
@@ -78,6 +80,7 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     const [editorFontSize, setEditorFontSize] = useState<number>(14);
     const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
     const [showFileSearch, setShowFileSearch] = useState<boolean>(false);
+    const [collaborationMode, setCollaborationMode] = useState<boolean>(false);
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
     const undo = useCallback(() => {
@@ -203,6 +206,8 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
                 setShowShortcuts,
                 showFileSearch,
                 setShowFileSearch,
+                collaborationMode,
+                setCollaborationMode,
             }}
         >
             {children}

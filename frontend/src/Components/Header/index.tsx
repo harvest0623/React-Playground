@@ -1,9 +1,10 @@
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import logoSvg from './icons/logo.svg'
 import styles from './index.module.scss'
 import { downLoadFiles, exportAsHtml, formatCode, shareFiles } from '../../ReactPlayground/utils'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import DependencyManager from '../DependencyManager'
+import CollaborationButton from '../CollaborationButton'
 
 export default function Header() {
     const {
@@ -13,6 +14,21 @@ export default function Header() {
         showShortcuts, setShowShortcuts,
     } = useContext(PlaygroundContext);
     const [showDeps, setShowDeps] = useState(false);
+    const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+    const downloadMenuRef = useRef<HTMLDivElement>(null);
+
+    const handleClickOutside = useCallback((e: MouseEvent) => {
+        if (downloadMenuRef.current && !downloadMenuRef.current.contains(e.target as Node)) {
+            setShowDownloadMenu(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (showDownloadMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [showDownloadMenu, handleClickOutside]);
 
     return (
         <div className={`${styles.header} ${isDarkMode ? styles.dark : ''}`}>
@@ -123,18 +139,43 @@ export default function Header() {
                     <div className={styles.tooltip}>Share</div>
                 </div>
 
-                <div className={styles.iconButton}>
-                    <i className="iconfont icon-xiazai" onClick={() => downLoadFiles(files)}></i>
-                    <div className={styles.tooltip}>Download</div>
-                </div>
-
-                <div className={styles.iconButton} onClick={() => exportAsHtml(files)}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
-                        <path d="M12 3v12"/>
-                        <path d="M8 11l4 4 4-4"/>
-                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
-                    </svg>
-                    <div className={styles.tooltip}>Export HTML</div>
+                <div style={{ position: 'relative' }} ref={downloadMenuRef}>
+                    <div className={styles.iconButton} onClick={() => setShowDownloadMenu(!showDownloadMenu)}>
+                        <i className="iconfont icon-xiazai"></i>
+                        <div className={styles.tooltip}>Download</div>
+                    </div>
+                    {showDownloadMenu && (
+                        <div style={{
+                            position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                            backgroundColor: isDarkMode ? '#2d2d2d' : '#fff',
+                            border: `1px solid ${isDarkMode ? '#444' : '#ddd'}`,
+                            borderRadius: 6, padding: '4px 0', zIndex: 1000,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)', minWidth: 160,
+                        }}>
+                            <div
+                                onClick={() => { downLoadFiles(files); setShowDownloadMenu(false) }}
+                                style={{
+                                    padding: '8px 14px', cursor: 'pointer', fontSize: 13,
+                                    color: isDarkMode ? '#ccc' : '#333', display: 'flex', alignItems: 'center', gap: 8,
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDarkMode ? '#3c3c3c' : '#f0f0f0')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                <span>📦</span> Export as ZIP
+                            </div>
+                            <div
+                                onClick={() => { exportAsHtml(files); setShowDownloadMenu(false) }}
+                                style={{
+                                    padding: '8px 14px', cursor: 'pointer', fontSize: 13,
+                                    color: isDarkMode ? '#ccc' : '#333', display: 'flex', alignItems: 'center', gap: 8,
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDarkMode ? '#3c3c3c' : '#f0f0f0')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                <span>📄</span> Export as HTML
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.iconButton} onClick={() => setShowShortcuts(!showShortcuts)}>
@@ -152,6 +193,8 @@ export default function Header() {
                     </svg>
                     <div className={styles.tooltip}>Shortcuts (Ctrl+Shift+?)</div>
                 </div>
+
+                <CollaborationButton />
 
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-github" onClick={() => window.open('https://github.com/harvest0623/React-Playground', '_blank')}></i>
