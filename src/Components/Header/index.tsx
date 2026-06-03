@@ -11,7 +11,6 @@ export default function Header() {
         undo, redo, isFullScreen, setIsFullScreen,
         editorFontSize, setEditorFontSize,
         showShortcuts, setShowShortcuts,
-        collabConnected,
     } = useContext(PlaygroundContext);
     const [showDeps, setShowDeps] = useState(false);
 

@@ -13,6 +13,7 @@ export default function Preview() {
     const refreshRef = useRef(0);
     const prevFilesRef = useRef<Files>(files);
     const [, forceUpdate] = useState(0);
+    const loadingRef = useRef<HTMLDivElement>(null);
 
     const handleMessage = useCallback((e: MessageEvent) => {
         if (e.source !== iframeRef.current?.contentWindow) return;
@@ -30,6 +31,14 @@ export default function Preview() {
     }, [handleMessage]);
 
     const compileResult = useMemo(() => compile(files), [files]);
+
+    useEffect(() => {
+        const el = loadingRef.current;
+        if (!el) return;
+        el.style.display = 'flex';
+        const timer = setTimeout(() => { el.style.display = 'none'; }, 150);
+        return () => clearTimeout(timer);
+    }, [compileResult]);
 
     useEffect(() => {
         const prev = prevFilesRef.current;
@@ -87,6 +96,9 @@ export default function Preview() {
         return URL.createObjectURL(new Blob([res], { type: 'text/html' }));
     }, [compileResult, files, isDarkMode]);
 
+    const recordingRef = useRef<{ recorder: MediaRecorder; chunks: Blob[] } | null>(null);
+    const [recording, setRecording] = useState(false);
+
     const handleRefresh = useCallback(() => {
         refreshRef.current += 1;
         forceUpdate(n => n + 1);
@@ -97,6 +109,49 @@ export default function Preview() {
             window.open(iframeUrl, '_blank');
         }
     }, [iframeUrl]);
+
+    const handleToggleRecord = useCallback(async () => {
+        if (recording) {
+            const rec = recordingRef.current;
+            if (rec && rec.recorder.state === 'recording') {
+                rec.recorder.stop();
+                rec.recorder.onstop = () => {
+                    const blob = new Blob(rec.chunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `preview-recording-${Date.now()}.webm`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+            }
+            recordingRef.current = null;
+            setRecording(false);
+            return;
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            const chunks: Blob[] = [];
+
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
+            stream.getVideoTracks()[0].onended = () => {
+                if (recorder.state === 'recording') recorder.stop();
+                recordingRef.current = null;
+                setRecording(false);
+            };
+
+            recorder.start();
+            recordingRef.current = { recorder, chunks };
+            setRecording(true);
+        } catch {
+            // user cancelled screen share
+        }
+    }, [recording]);
 
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
@@ -121,6 +176,17 @@ export default function Preview() {
                     Refresh
                 </span>
                 <span
+                    onClick={handleToggleRecord}
+                    style={{
+                        cursor: 'pointer', fontSize: 11, borderRadius: 3, padding: '2px 6px',
+                        color: recording ? '#ff4444' : (isDarkMode ? '#888' : '#999'),
+                        fontWeight: recording ? 'bold' : 'normal',
+                    }}
+                    title={recording ? 'Stop Recording' : 'Record Preview'}
+                >
+                    {recording ? 'Stop' : 'Record'}
+                </span>
+                <span
                     onClick={handleOpenExternal}
                     style={{
                         cursor: iframeUrl ? 'pointer' : 'default',
@@ -134,6 +200,19 @@ export default function Preview() {
                 </span>
             </div>
             <div style={{ flex: 1, backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff', position: 'relative' }}>
+                <div ref={loadingRef} style={{
+                    display: 'none', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    alignItems: 'center', justifyContent: 'center',
+                    backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff', zIndex: 5,
+                }}>
+                    <div style={{
+                        width: 24, height: 24,
+                        border: `2px solid ${isDarkMode ? '#444' : '#ddd'}`,
+                        borderTop: `2px solid ${isDarkMode ? '#fff' : '#333'}`,
+                        borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite',
+                    }} />
+                </div>
                 <iframe ref={iframeRef} src={iframeUrl} style={{ height: '100%', width: '100%', border: 'none', padding: 0 }} />
                 {!iframeUrl && !compileResult.error && (
                     <div style={{

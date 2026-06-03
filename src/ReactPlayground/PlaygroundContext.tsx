@@ -3,7 +3,6 @@ import type { editor } from 'monaco-editor'
 import type { EditorFile } from '../Components/CodeEditor/Editor.tsx'
 import { getFileNameLanguage, restoreFilesFromUrl } from './utils.ts'
 import { initFiles } from './files.ts'
-import type { RefObject } from 'react'
 
 export interface Files {
     [key: string]: EditorFile
@@ -47,10 +46,6 @@ export interface PlaygroundContext {
     setShowShortcuts: (v: boolean) => void,
     showFileSearch: boolean,
     setShowFileSearch: (v: boolean) => void,
-    recording: boolean,
-    toggleRecording: () => void,
-    recordingRef: RefObject<boolean>,
-    collabConnected: boolean,
 }
 
 // files = {
@@ -84,13 +79,6 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
     const [showFileSearch, setShowFileSearch] = useState<boolean>(false);
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-    const channelRef = useRef<BroadcastChannel | null>(null);
-    const isRemoteUpdateRef = useRef(false);
-    const [collabConnected, setCollabConnected] = useState<boolean>(true);
-    const [recording, setRecording] = useState<boolean>(false);
-    const recordingRef = useRef<boolean>(false);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const chunksRef = useRef<Blob[]>([]);
 
     const undo = useCallback(() => {
         editorRef.current?.trigger('keyboard', 'undo', null);
@@ -167,35 +155,6 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     }, []);
 
     useEffect(() => {
-        const channel = new BroadcastChannel('react-playground-collab');
-        channelRef.current = channel;
-        
-        channel.onmessage = (e) => {
-            if (e.data.type === 'files-update') {
-                isRemoteUpdateRef.current = true;
-                setFiles(e.data.files);
-                if (e.data.selectedFileName) {
-                    setSelectedFileName(e.data.selectedFileName);
-                }
-            }
-        };
-        
-        return () => channel.close();
-    }, []);
-
-    useEffect(() => {
-        if (isRemoteUpdateRef.current) {
-            isRemoteUpdateRef.current = false;
-            return;
-        }
-        channelRef.current?.postMessage({
-            type: 'files-update',
-            files,
-            selectedFileName,
-        });
-    }, [files, selectedFileName]);
-
-    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.shiftKey && e.key === '?') {
                 e.preventDefault();
@@ -244,7 +203,6 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
                 setShowShortcuts,
                 showFileSearch,
                 setShowFileSearch,
-                collabConnected,
             }}
         >
             {children}
