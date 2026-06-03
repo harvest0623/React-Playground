@@ -10,11 +10,15 @@ import ConsolePanel from '../Components/ConsolePanel'
 import ShortcutsPanel from '../Components/ShortcutsPanel'
 import FileSearch from '../Components/FileSearch'
 import CollaborationPanel from '../Components/CollaborationPanel'
+import AIAssistant from '../Components/AIAssistant'
+import CSSVisualEditor from '../Components/CSSVisualEditor'
+import PropsEditor from '../Components/PropsEditor'
+import DiffViewer from '../Components/DiffViewer'
 import { PlaygroundContext } from './PlaygroundContext'
 import { CollaborationProvider } from '../Collaboration/CollaborationContext'
 
 export default function ReactPlayground() {
-    const { isDarkMode, isFullScreen, showFileSearch, setShowFileSearch } = useContext(PlaygroundContext);
+    const { isDarkMode, isFullScreen, showFileSearch, setShowFileSearch, showDiff, setShowDiff } = useContext(PlaygroundContext);
     const [fileSearchKey, setFileSearchKey] = useState(0);
 
     if (isFullScreen) {
@@ -28,6 +32,7 @@ export default function ReactPlayground() {
                     <Preview />
                 </div>
                 <CollaborationPanel />
+                <AIAssistant />
             </CollaborationProvider>
         );
     }
@@ -52,7 +57,13 @@ export default function ReactPlayground() {
                                     <FileExplorer/>
                                 </Allotment.Pane>
                                 <Allotment.Pane minSize={200}>
-                                    <CodeEditor/>
+                                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ flex: 1, minHeight: 0 }}>
+                                            <CodeEditor/>
+                                        </div>
+                                        <CSSVisualEditor />
+                                        <PropsEditor />
+                                    </div>
                                 </Allotment.Pane>
                             </Allotment>
                         </Allotment.Pane>
@@ -74,6 +85,8 @@ export default function ReactPlayground() {
                 <FileSearch key={fileSearchKey} open={showFileSearch} onClose={() => { setShowFileSearch(false); setFileSearchKey(k => k + 1); }} isDarkMode={isDarkMode} />
             </div>
             <CollaborationPanel />
+            <AIAssistant />
+            <DiffViewer open={showDiff} onClose={() => setShowDiff(false)} />
         </CollaborationProvider>
     )
 }

@@ -15,6 +15,9 @@ export default function Header() {
         showShortcuts, setShowShortcuts,
         clearStorage, lastSaved,
         showHistory, setShowHistory,
+        showAI, setShowAI,
+        showCSSEditor, setShowCSSEditor,
+        showPropsEditor, setShowPropsEditor,
     } = useContext(PlaygroundContext);
     const { t, locale, setLocale } = useLanguage();
     const [showDeps, setShowDeps] = useState(false);
@@ -168,6 +171,11 @@ export default function Header() {
                     <div className={styles.tooltip}>{t('dependencies')}</div>
                 </div>
 
+                <div className={styles.iconButton} onClick={() => setShowAI(!showAI)}>
+                    <i className="iconfont icon-wuguan" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
+                    <div className={styles.tooltip}>{t('aiAssistant')}</div>
+                </div>
+
                 <div className={styles.iconButton}>
                     <i className="iconfont icon-fenxiang" onClick={() => {
                         const url = shareFiles(files);
@@ -240,6 +248,24 @@ export default function Header() {
                         <polyline points="12,6 12,12 16,14"/>
                     </svg>
                     <div className={styles.tooltip}>{t('versionHistory')}</div>
+                </div>
+
+                <div
+                    className={styles.iconButton}
+                    onClick={() => setShowCSSEditor(!showCSSEditor)}
+                    style={{ opacity: showCSSEditor ? 1 : undefined }}
+                >
+                    <i className="iconfont icon-keshihuabianjiqi" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
+                    <div className={styles.tooltip}>{t('cssVisualEditor')}</div>
+                </div>
+
+                <div
+                    className={styles.iconButton}
+                    onClick={() => setShowPropsEditor(!showPropsEditor)}
+                    style={{ opacity: showPropsEditor ? 1 : undefined }}
+                >
+                    <i className="iconfont icon-shezhi" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
+                    <div className={styles.tooltip}>{t('propsEditor')}</div>
                 </div>
 
                 <div className={styles.iconButton}>

@@ -58,6 +58,16 @@ export interface PlaygroundContext {
     clearVersionHistory: () => void,
     showHistory: boolean,
     setShowHistory: (v: boolean) => void,
+    showAI: boolean,
+    setShowAI: (v: boolean) => void,
+    showCSSEditor: boolean,
+    setShowCSSEditor: (v: boolean) => void,
+    showPropsEditor: boolean,
+    setShowPropsEditor: (v: boolean) => void,
+    showDiff: boolean,
+    setShowDiff: (v: boolean) => void,
+    diffData: { oldFiles: Files; newFiles: Files } | null,
+    setDiffData: (v: { oldFiles: Files; newFiles: Files } | null) => void,
 }
 
 // files = {
@@ -94,6 +104,11 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [versionHistory, setVersionHistory] = useState<VersionEntry[]>(() => getHistory());
     const [showHistory, setShowHistory] = useState<boolean>(false);
+    const [showAI, setShowAI] = useState<boolean>(false);
+    const [showCSSEditor, setShowCSSEditor] = useState<boolean>(false);
+    const [showPropsEditor, setShowPropsEditor] = useState<boolean>(false);
+    const [showDiff, setShowDiff] = useState<boolean>(false);
+    const [diffData, setDiffData] = useState<{ oldFiles: Files; newFiles: Files } | null>(null);
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const filesRef = useRef<Files>(files);
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -300,6 +315,16 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
                 clearVersionHistory,
                 showHistory,
                 setShowHistory,
+                showAI,
+                setShowAI,
+                showCSSEditor,
+                setShowCSSEditor,
+                showPropsEditor,
+                setShowPropsEditor,
+                showDiff,
+                setShowDiff,
+                diffData,
+                setDiffData,
             }}
         >
             {children}

@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 function formatRelativeTime(timestamp: number): string {
     const now = Date.now()
@@ -19,7 +20,9 @@ export default function HistoryPanel() {
     const {
         isDarkMode, showHistory, setShowHistory,
         versionHistory, restoreVersion, clearVersionHistory,
+        files, setDiffData, setShowDiff,
     } = useContext(PlaygroundContext)
+    const { t } = useLanguage()
 
     const bg = isDarkMode ? '#1e1e1e' : '#fff'
     const border = isDarkMode ? '#333' : '#e5e5e5'
@@ -106,25 +109,47 @@ export default function HistoryPanel() {
                                 <div style={{ fontSize: 12, color: textSecondary, marginBottom: 8 }}>
                                     {Object.keys(entry.files).length} 个文件
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        restoreVersion(entry.id)
-                                        setShowHistory(false)
-                                    }}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 0',
-                                        fontSize: 13,
-                                        borderRadius: 8,
-                                        border: `1px solid ${border}`,
-                                        backgroundColor: 'transparent',
-                                        color: text,
-                                        cursor: 'pointer',
-                                        fontWeight: 500,
-                                    }}
-                                >
-                                    Restore
-                                </button>
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <button
+                                        onClick={() => {
+                                            restoreVersion(entry.id)
+                                            setShowHistory(false)
+                                        }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '8px 0',
+                                            fontSize: 13,
+                                            borderRadius: 8,
+                                            border: `1px solid ${border}`,
+                                            backgroundColor: 'transparent',
+                                            color: text,
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        {t('restore')}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setDiffData({ oldFiles: entry.files, newFiles: files })
+                                            setShowDiff(true)
+                                            setShowHistory(false)
+                                        }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '8px 0',
+                                            fontSize: 13,
+                                            borderRadius: 8,
+                                            border: `1px solid ${border}`,
+                                            backgroundColor: 'transparent',
+                                            color: '#1976d2',
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        {t('compare')}
+                                    </button>
+                                </div>
                             </div>
                         ))
                     )}

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import { useCollaboration } from '../../Collaboration/CollaborationContext'
 import NameDialog from '../CollaborationPanel/NameDialog'
@@ -20,6 +20,23 @@ export default function CollaborationButton() {
     const [showJoinDialog, setShowJoinDialog] = useState(false)
     const [roomNameInput, setRoomNameInput] = useState('')
     const [joinRoomIdInput, setJoinRoomIdInput] = useState('')
+    const tooltipRef = useRef<HTMLDivElement>(null)
+
+    const handleBtnEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
+        if (tooltipRef.current) {
+            tooltipRef.current.style.opacity = '1'
+            tooltipRef.current.style.visibility = 'visible'
+        }
+    }
+
+    const handleBtnLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.backgroundColor = 'transparent'
+        if (tooltipRef.current) {
+            tooltipRef.current.style.opacity = '0'
+            tooltipRef.current.style.visibility = 'hidden'
+        }
+    }
 
     const isCollaborating = !!roomId
 
@@ -109,56 +126,67 @@ export default function CollaborationButton() {
 
     return (
         <>
-            <div
-                className="iconButton"
-                onClick={handleCollabClick}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    padding: '4px 10px',
-                    borderRadius: 8,
-                    cursor: 'pointer',
-                    fontSize: 13,
-                    color: isCollaborating
-                        ? (connected ? '#98c379' : '#e5c07b')
-                        : (isDarkMode ? '#fff' : '#333'),
-                    fontWeight: isCollaborating ? 500 : 400,
-                    position: 'relative',
-                }}
-            >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                <span>{isCollaborating ? t('collaborating') : t('collaborate')}</span>
-                {isCollaborating && (
-                    <span style={{
-                        fontSize: 11,
-                        backgroundColor: '#61afef',
-                        color: '#fff',
-                        borderRadius: 10,
-                        padding: '1px 6px',
-                        marginLeft: 2,
-                    }}>
-                        {collaborators.length}
-                    </span>
-                )}
+            <div style={{ position: 'relative', display: 'inline-flex' }}>
+                <div
+                    onClick={handleCollabClick}
+                    style={{
+                        cursor: 'pointer',
+                        width: 32,
+                        height: 32,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        transition: 'background-color 0.2s',
+                    }}
+                    onMouseEnter={handleBtnEnter}
+                    onMouseLeave={handleBtnLeave}
+                >
+                    <i className="iconfont icon-renren" style={{
+                        fontSize: 20,
+                        color: isCollaborating
+                            ? (connected ? '#98c379' : '#e5c07b')
+                            : (isDarkMode ? '#fff' : '#333'),
+                        fontWeight: 'bold',
+                    }}></i>
+                    {isCollaborating && (
+                        <span style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: -4,
+                            fontSize: 10,
+                            backgroundColor: '#61afef',
+                            color: '#fff',
+                            borderRadius: 8,
+                            padding: '0 4px',
+                            lineHeight: '16px',
+                            minWidth: 14,
+                            textAlign: 'center',
+                        }}>
+                            {collaborators.length + 1}
+                        </span>
+                    )}
+                </div>
                 <div style={{
                     position: 'absolute',
                     bottom: -30,
                     left: '50%',
                     transform: 'translateX(-50%)',
                     fontSize: 12,
-                    color: isDarkMode ? '#ccc' : '#555',
+                    backgroundColor: isDarkMode ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+                    color: isDarkMode ? '#000' : '#fff',
+                    padding: '4px 8px',
+                    borderRadius: 4,
                     whiteSpace: 'nowrap',
                     pointerEvents: 'none',
                     opacity: 0,
-                    transition: 'opacity 0.2s',
-                }}>
-                    {isCollaborating ? t('openCollabPanel') : t('startCollab')}
+                    visibility: 'hidden',
+                    transition: 'opacity 0.15s, visibility 0.15s',
+                    zIndex: 100,
+                }}
+                    ref={tooltipRef}
+                >
+                    {t('collaborate')}
                 </div>
             </div>
 
