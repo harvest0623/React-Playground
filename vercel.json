@@ -4,15 +4,12 @@
     "frontend": {
       "root": "frontend",
       "routePrefix": "/",
-      "framework": "vite",
-      "buildCommand": "npm run build",
-      "outputDirectory": "dist"
+      "framework": "vite"
     },
     "backend": {
       "root": "backend",
       "routePrefix": "/backend",
-      "framework": "nextjs",
-      "buildCommand": "npm run build"
+      "framework": "nextjs"
     }
   }
 }
