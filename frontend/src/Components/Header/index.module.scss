@@ -48,11 +48,11 @@
         &:hover {
             background-color: rgba(0, 0, 0, 0.1);
         }
-        
+
         i {
             font-size: 24px;
         }
-        
+
         .icon-taiyang {
             font-size: 24px;
         }
@@ -75,11 +75,11 @@
         &:hover {
             background-color: rgba(0, 0, 0, 0.1);
         }
-        
+
         i {
             font-size: 24px;
         }
-        
+
         .tooltip {
             position: absolute;
             bottom: -30px;
@@ -96,10 +96,56 @@
             transition: all 0.3s ease;
             z-index: 1000;
         }
-        
+
         &:hover .tooltip {
             opacity: 1;
             visibility: visible;
+        }
+    }
+
+    .hamburgerButton {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .mobileMenu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 4px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 4px 0;
+        z-index: 1000;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .mobileMenuItem {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #333;
+        transition: background-color 0.15s;
+
+        &:hover {
+            background-color: #f0f0f0;
         }
     }
 }
@@ -122,9 +168,68 @@
     .iconButton:hover {
         background-color: rgba(255, 255, 255, 0.1);
     }
-    
+
     .iconButton .tooltip {
         background-color: rgba(255, 255, 255, 0.8);
         color: #000;
+    }
+
+    .hamburgerButton:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .mobileMenu {
+        background-color: #2d2d2d;
+        border-color: #444;
+    }
+
+    .mobileMenuItem {
+        color: #ccc;
+
+        &:hover {
+            background-color: #3c3c3c;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0 8px;
+        height: 40px;
+
+        .logo span {
+            display: none;
+        }
+
+        .iconButton {
+            width: 32px;
+            height: 32px;
+
+            i {
+                font-size: 18px;
+            }
+
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        .themeToggle {
+            width: 32px;
+            height: 32px;
+
+            i {
+                font-size: 18px;
+            }
+        }
+
+        .hamburgerButton {
+            display: flex;
+        }
+
+        .iconContainer {
+            gap: 4px;
+        }
     }
 }

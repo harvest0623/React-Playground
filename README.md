@@ -1,246 +1,137 @@
-# 🎨 React Playground 
+# React Playground
 
-[<img src="https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=61DAFB" alt="React"/>](https://react.dev/)
-[<img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=3178C6" alt="TypeScript" />](https://www.typescriptlang.org/)
-[<img src="https://img.shields.io/badge/Vite-6.0+-646CFF?logo=vite&logoColor=646CFF" alt="Vite" />](https://vitejs.dev/)
-[<img src="https://img.shields.io/badge/Babel-7.16+-F9DC3E?logo=babel&logoColor=F9DC3E" alt="Babel" />](https://babeljs.io/)
-[<img src="https://img.shields.io/badge/Monaco_Editor-4.0+-FF7F50?logo=codefactor&logoColor=FF7F50" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/)
-[<img src="https://img.shields.io/badge/Allotment-1.0+-CB3837?logo=npm&logoColor=CB3837" alt="Allotment" />](https://github.com/johnwalley/allotment)
-[<img src="https://img.shields.io/badge/Sass-1.40+-CC6699?logo=sass&logoColor=CC6699" alt="Sass" />](https://sass-lang.com/)
+> 一个功能丰富的在线 React 代码编辑器和 playground，支持实时预览、多人协作、AI 代码助手等 30+ 功能。
 
-**本项目使用：**
+![React Playground](https://img.shields.io/badge/React-19-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue) ![Vite](https://img.shields.io/badge/Vite-7-green) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-[<img src="https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react&logoColor=61DAFB" alt="React" />](https://react.dev/)
-[<img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=3178C6" alt="TypeScript" />](https://www.typescriptlang.org/)
-[<img src="https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite&logoColor=646CFF" alt="Vite" />](https://vitejs.dev/)
-[<img src="https://img.shields.io/badge/Babel-7.29.0-F9DC3E?logo=babel&logoColor=F9DC3E" alt="Babel" />](https://babeljs.io/)
-[<img src="https://img.shields.io/badge/Monaco_Editor-4.7.0-FF7F50?logo=codefactor&logoColor=FF7F50" alt="Monaco Editor" />](https://microsoft.github.io/monaco-editor/)
-[<img src="https://img.shields.io/badge/Allotment-1.20.5-CB3837?logo=npm&logoColor=CB3837" alt="Allotment" />](https://github.com/johnwalley/allotment)
-[<img src="https://img.shields.io/badge/Sass-1.97.3-CC6699?logo=sass&logoColor=CC6699" alt="Sass" />](https://sass-lang.com/)
+## ✨ 核心特性
 
-> **一个轻量、现代的在线 React 代码编辑器**，专为前端开发者打造，支持 TypeScript/TSX 等多语言实时编辑与预览，让你在浏览器中快速迭代组件原型。
+### 编辑器
+- Monaco Editor — VS Code 同款编辑器内核
+- 10+ 编辑器主题（Monokai, Dracula, Nord, One Dark Pro...）
+- 实时 TypeScript/TSX 编译和预览
+- 内联错误标注（红色波浪线）
+- 代码格式化（Prettier）
 
-## ✨ 项目亮点
+### 协作 & 分享
+- WebSocket 实时多人协作
+- 权限管理（Owner / Editor / Viewer）
+- 邀请链接分享
+- 一键分享（URL 编码）
 
-### 🚀 实时开发体验
-- **即时反馈**：修改代码后 **`300ms` 内自动编译并更新预览**
-- **智能防抖**：使用 **`Lodash-es` 防抖优化**，避免频繁输入导致性能损耗
-- **所见即所得**：`iframe` 实时渲染，**无需手动刷新**
+### AI 代码助手
+- 内嵌 AI 聊天面板
+- 流式响应（逐字显示）
+- 快捷操作：解释代码 / 修复错误 / 生成组件 / 优化代码
+- 代码块一键插入编辑器
 
-### 🎯 TypeScript 增强
-- **类型检查**：实时 `TypeScript` 类型验证
-- **智能提示**：通过 `@typescript/ata` 自动获取第三方库类型定义
-- **TSX 编译**：浏览器端 `Babel` 编译，支持**最新 `React` 语法**
+### 开发体验
+- 模板选择器（6 个预设模板）
+- 文件搜索（Ctrl+P）+ Command Palette（Ctrl+Shift+P）
+- 拖拽上传文件
+- 键盘快捷键
+- 状态持久化（IndexedDB）
+- 版本历史 + Diff 对比
+- 国际化（中文 / English）
 
-### 🎨 现代 UI 设计
-- **主题切换**：**深色/浅色双模式**，支持系统主题自动适配
-- **响应式布局**：拖拽调整面板比例，适配不同屏幕尺寸
-- **样式隔离**：`CSS Modules` + `Sass`，彻底告别样式冲突
+### 可视化工具
+- CSS 可视化编辑器（颜色选择器、滑块、下拉框）
+- 组件 Props 编辑器
+- 预览区多设备模拟（桌面 / 平板 / 手机）
+- 录制预览操作
+- 导出为 ZIP / 独立 HTML
 
-### 📦 便捷功能
-- **多文件管理**：模拟真实项目结构，支持多文件编辑与切换
-- **一键导出**：打包为 `ZIP` 文件，本地复现无压力
-- **模板系统**：可自定义默认项目模板，快速启动新项目
+### UI/UX
+- 启动动画（Splash Screen）
+- 骨架屏加载态
+- 深色/浅色主题
+- 拖拽调整分栏
+- 响应式布局（移动端适配）
 
-## 🚀 功能特性
+## 🚀 快速开始
 
-- **Monaco 编辑器**：基于 VS Code 同款编辑器，提供语法高亮、智能提示和自动补全
-- **实时预览**：iframe 实时渲染，所见即所得，无需手动刷新
-- **TSX 即时编译**：浏览器端 Babel 编译，TypeScript 类型检查与代码提示无缝衔接
-- **主题切换**：支持深色/浅色双模式，适配不同开发场景
-- **多文件管理**：多文件编辑与切换，模拟真实项目结构
-- **拖拽布局**：灵活调整编辑器与预览面板比例，提升开发效率
-- **代码导出**：一键打包下载为 ZIP，本地复现无压力
-- **样式隔离**：CSS Modules + Sass，彻底告别样式冲突
+### 前置要求
+- Node.js >= 18
+- npm >= 9
 
-## 🛠️ 技术栈
-
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| React | 19.2.0 | 现代 UI 框架，函数式组件 + Hooks |
-| TypeScript | 5.9.3 | 类型安全，智能提示 |
-| Vite | 7.2.4 | 极速构建与热重载 |
-| Babel | 7.29.0 | 浏览器端 TSX/JSX 编译 |
-| Monaco Editor | 4.7.0 | 专业代码编辑体验 |
-| Allotment | 1.20.5 | 可拖拽面板布局 |
-| Sass | 1.97.3 | 增强 CSS 能力 |
-| Lodash-es | 4.17.23 | 防抖等工具函数 |
-| JSZip + File-Saver | 最新 | 代码打包下载 |
-
-## 📁 项目结构
-
-```plaintext
-src/
-├── Components/
-│   ├── CodeEditor/            # 代码编辑器模块
-│   │   ├── Editor.tsx         # Monaco 编辑器主体
-│   │   ├── FileNameItem.tsx   # 单个文件标签
-│   │   ├── FileNameList.tsx   # 文件列表管理
-│   │   └── ata.ts             # TypeScript 自动类型获取配置
-│   ├── Header/                # 顶部导航与操作栏
-│   │   └── icons/             # 图标资源
-│   └── Preview/               # 实时预览模块
-│       ├── compiler.ts        # TSX 编译核心逻辑
-│       └── iframe.html        # 预览容器模板
-├── ReactPlayground/           # 应用核心逻辑
-│   ├── template/              # 默认项目模板
-│   │   ├── App.tsx
-│   │   ├── App.css
-│   │   ├── main.tsx
-│   │   └── import-map.json
-│   ├── PlaygroundContext.tsx  # 全局状态管理
-│   ├── files.ts               # 初始文件配置
-│   ├── utils.ts               # 工具函数
-│   └── index.tsx              # 主容器组件
-├── App.tsx                    # 应用入口
-└── main.tsx                   # React 挂载点
-```
-
-## 🏃 快速开始
-
-### 1. 克隆项目到本地
+### 安装运行
 
 ```bash
+# 克隆项目
 git clone https://github.com/harvest0623/React-Playground.git
-```
+cd React-Playground
 
-### 2. 安装依赖
-
-```bash
+# 安装前端依赖
+cd frontend
 npm install
-```
+npm run dev
 
-### 3. 启动开发服务器
-
-```bash
+# 在另一个终端启动后端（如需协作功能）
+cd backend
+npm install
 npm run dev
 ```
 
-### 4. 构建生产版本
+### 访问地址
+- 前端：http://localhost:5173
+- 后端 API：http://localhost:3000
+- WebSocket：ws://localhost:3001
 
-```bash
-npm run build
+## 📁 项目结构
+
+```
+React-Playground/
+├── frontend/                 # 前端（React + Vite + TypeScript）
+│   ├── src/
+│   │   ├── Components/       # UI 组件
+│   │   │   ├── AIAssistant/  # AI 代码助手
+│   │   │   ├── CodeEditor/   # Monaco 编辑器
+│   │   │   ├── CollaborationButton/  # 协作按钮
+│   │   │   ├── CollaborationPanel/   # 协作面板
+│   │   │   ├── CommandPalette/       # 命令面板
+│   │   │   ├── CSSVisualEditor/      # CSS 可视化编辑器
+│   │   │   ├── DiffViewer/           # Diff 对比视图
+│   │   │   ├── PropsEditor/          # Props 编辑器
+│   │   │   ├── ThemeStore/           # 编辑器主题商店
+│   │   │   └── ...
+│   │   ├── ReactPlayground/  # 核心模块
+│   │   ├── Collaboration/    # 协作状态管理
+│   │   └── i18n/             # 国际化
+│   └── ...
+├── backend/                  # 后端（Next.js + WebSocket）
+│   ├── src/
+│   │   ├── lib/              # WebSocket 服务器
+│   │   └── app/api/          # REST API
+│   └── ...
+└── README.md
 ```
 
-### 5. 运行代码检查
+## 🛠 技术栈
 
-```bash
-npm run lint
-```
+| 技术 | 用途 |
+|------|------|
+| React 19 | UI 框架 |
+| TypeScript 5.9 | 类型安全 |
+| Vite 7 | 构建工具 |
+| Monaco Editor | 代码编辑器 |
+| Babel Standalone | TSX/TS 实时编译 |
+| Allotment | 可拖拽分栏 |
+| WebSocket | 实时通信 |
+| Next.js 16 | 后端框架 |
+| IndexedDB | 本地持久化 |
+| Prettier | 代码格式化 |
 
-### 6. 预览生产构建
+## ⌨️ 快捷键
 
-```bash
-npm run preview
-```
+| 快捷键 | 功能 |
+|--------|------|
+| Ctrl+Z | 撤销 |
+| Ctrl+Shift+Z | 重做 |
+| Ctrl+M | 格式化代码 |
+| Ctrl+P | 文件搜索 |
+| Ctrl+Shift+P | 命令面板 |
+| Escape | 关闭面板 |
 
-## 🔍 核心实现原理
+## 📄 License
 
-### 1. TSX 实时编译
-
-使用 `@babel/standalone` 在浏览器端将 TSX 代码转换为可执行的 JavaScript：
-
-```typescript
-import Babel from '@babel/standalone';
-
-const result = Babel.transform(code, {
-    presets: ['react', 'typescript'],
-    filename: 'App.tsx'
-});
-```
-
-### 2. 预览渲染
-
-将编译后的代码封装为 Blob URL，注入 iframe 实现实时预览：
-
-```typescript
-const blob = new Blob([compiledCode], { type: 'application/javascript' });
-const url = URL.createObjectURL(blob);
-```
-
-### 3. TypeScript 智能提示
-
-通过 `@typescript/ata` 自动获取第三方库类型定义，提供精准的代码补全：
-
-```typescript
-import { createTypeAcquisitionWorker } from '@typescript/ata';
-
-const ata = createTypeAcquisitionWorker({
-    worker: new Worker(new URL('./ata.worker.ts', import.meta.url))
-});
-```
-
-### 4. 样式隔离
-
-采用 CSS Modules + Sass 方案，确保组件样式互不干扰：
-
-```typescript
-import styles from './Editor.module.scss';
-
-<div className={styles.editorContainer}>...</div>
-```
-
-### 5. 防抖优化
-
-使用 `lodash-es` 的防抖函数，避免频繁输入导致的重复编译：
-
-```typescript
-import { debounce } from 'lodash-es';
-
-const debouncedCompile = debounce(compileCode, 300);
-```
-
-## 🧩 开发指南
-
-### 添加新功能
-
-1. 在 `src/Components/` 下创建新组件目录
-2. 使用 `.module.scss` 编写样式，确保隔离
-3. 通过 `PlaygroundContext` 共享全局状态
-4. 遵循 TypeScript 类型规范，完善类型定义
-
-### 修改默认模板
-
-模板文件位于 `src/ReactPlayground/template/`：
-- `App.tsx`：默认 React 组件
-- `main.tsx`：应用入口
-- `import-map.json`：ES Module 导入映射（可扩展第三方库支持）
-
-## 📦 依赖说明
-
-### 生产依赖
-
-- `@babel/core` & `@babel/standalone`：浏览器端代码编译
-- `@monaco-editor/react`：专业代码编辑体验
-- `@typescript/ata`：TypeScript 智能提示
-- `allotment`：可拖拽面板布局
-- `file-saver` & `jszip`：代码打包下载
-- `lodash-es`：工具函数库
-- `react` & `react-dom`：UI 框架核心
-
-### 开发依赖
-
-- `typescript`：类型检查与编译
-- `vite`：现代构建工具
-- `eslint`：代码规范检查
-- `sass`：CSS 预处理器
-- `@vitejs/plugin-react`：Vite React 插件
-
-## 🤝 贡献指南
-
-1. `Fork` 本仓库
-2. 创建特性分支：`git checkout -b feature/YourFeature`
-3. 提交更改：`git commit -m 'Add some YourFeature'`
-4. 推送到分支：`git push origin feature/YourFeature`
-5. 开启 Pull Request
-
-## 📄 许可证
-
-本项目采用 MIT 许可证，详见 [LICENSE](https://github.com/harvest0623/React-Playground/blob/main/LICENSE) 文件。
-
-## 📞 联系方式
-
-- GitHub Issues: [提交问题](https://github.com/harvest0623/React-Playground/issues)
-- 邮箱：3367741939@qq.com or harvest060523@gmail.com
-
-**如果这个项目对你有帮助，欢迎给一个 ⭐ Star！**
+MIT

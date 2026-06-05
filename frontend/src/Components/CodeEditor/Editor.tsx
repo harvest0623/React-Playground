@@ -3,6 +3,7 @@ import MonacoEditor from '@monaco-editor/react'
 import type { EditorProps, OnMount } from '@monaco-editor/react'
 import { createATA } from './Editor/ata.ts'
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
+import { getThemeById } from '../../ReactPlayground/themes'
 
 export interface EditorFile {
     name: string
@@ -40,14 +41,40 @@ function ensureErrorStyles() {
 }
 
 export default function Editor(props: Props) {
-    const { file, onChange, options, isDarkMode } = props;
-    const { editorRef, editorFontSize, compileError, errorLine } = useContext(PlaygroundContext);
+    const { file, onChange, options } = props;
+    const { editorRef, editorFontSize, compileError, errorLine, editorTheme } = useContext(PlaygroundContext);
     const monacoRef = useRef<typeof import('monaco-editor') | null>(null);
+
+    const applyTheme = (monaco: typeof import('monaco-editor'), themeId: string) => {
+        const theme = getThemeById(themeId);
+        if (theme) {
+            monaco.editor.defineTheme(themeId, {
+                base: theme.isDark ? 'vs-dark' : 'vs',
+                inherit: true,
+                rules: theme.tokenColors.map(tc => ({
+                    token: tc.token,
+                    foreground: tc.foreground,
+                    fontStyle: tc.fontStyle,
+                })),
+                colors: {
+                    'editor.background': theme.colors.bg,
+                    'editor.foreground': theme.colors.fg,
+                    'editor.selectionBackground': theme.colors.selection,
+                    'editor.lineHighlightBackground': theme.colors.lineHighlight,
+                    'editorCursor.foreground': theme.colors.cursor,
+                    'editorGutter.background': theme.colors.gutterBg,
+                },
+            });
+            monaco.editor.setTheme(themeId);
+        }
+    };
 
     const handleEditorMount: OnMount = (editor, monaco) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
         ensureErrorStyles();
+
+        applyTheme(monaco, editorTheme);
 
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M, () => {
             editor.getAction('editor.action.formatDocument')?.run();
@@ -88,10 +115,16 @@ export default function Editor(props: Props) {
         }
     }, [compileError, errorLine, editorRef]);
 
+    useEffect(() => {
+        const monaco = monacoRef.current;
+        if (!monaco) return;
+        applyTheme(monaco, editorTheme);
+    }, [editorTheme]);
+
     return (
         <MonacoEditor
             height="100%"
-            theme={isDarkMode ? "vs-dark" : "vs"}
+            theme={editorTheme}
             language={file.language}
             path={file.name}
             value={file.value}

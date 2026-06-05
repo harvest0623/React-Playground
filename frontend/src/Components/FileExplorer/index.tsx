@@ -119,7 +119,8 @@ function NewFileDialog({ open, onClose, onConfirm, isDarkMode }: NewFileDialogPr
 export default function FileExplorer() {
     const { files, selectedFileName, setSelectedFileName, addFile, removeFile, isDarkMode } = useContext(PlaygroundContext)
     const { t } = useLanguage()
-    const [collapsed, setCollapsed] = useState(false)
+    const [isMobile] = useState(() => window.innerWidth <= 768)
+    const [collapsed, setCollapsed] = useState(isMobile)
     const [showNewFile, setShowNewFile] = useState(false)
     const [isDragging, setIsDragging] = useState(false)
     const [searchMode, setSearchMode] = useState(false)
@@ -254,7 +255,7 @@ export default function FileExplorer() {
                                 if (e.key === 'Escape') { setSearchMode(false); setSearchQuery('') }
                             }}
                             placeholder={t('searchFiles')}
-                            style={{ flex: 1, padding: '4px 8px', border: isDarkMode ? '1px solid #444' : '1px solid #ddd', borderRadius: 3, backgroundColor: isDarkMode ? '#3c3c3c' : '#fff', color: isDarkMode ? '#ccc' : '#333', fontSize: 12, outline: 'none' }}
+                            style={{ flex: 1, padding: '4px 8px', border: isDarkMode ? '1px solid #444' : '1px solid #ddd', borderRadius: 3, backgroundColor: isDarkMode ? '#3c3c3c' : '#fff', color: isDarkMode ? '#ccc' : '#333', fontSize: 12, outline: 'none', width: isMobile ? '100%' : undefined }}
                         />
                         <span
                             onClick={() => { setSearchMode(false); setSearchQuery('') }}

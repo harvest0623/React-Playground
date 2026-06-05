@@ -1,6 +1,6 @@
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import FileExplorer from '../Components/FileExplorer'
 import CodeEditor from '../Components/CodeEditor'
@@ -14,12 +14,20 @@ import AIAssistant from '../Components/AIAssistant'
 import CSSVisualEditor from '../Components/CSSVisualEditor'
 import PropsEditor from '../Components/PropsEditor'
 import DiffViewer from '../Components/DiffViewer'
+import CommandPalette from '../Components/CommandPalette'
 import { PlaygroundContext } from './PlaygroundContext'
 import { CollaborationProvider } from '../Collaboration/CollaborationContext'
 
 export default function ReactPlayground() {
     const { isDarkMode, isFullScreen, showFileSearch, setShowFileSearch, showDiff, setShowDiff } = useContext(PlaygroundContext);
     const [fileSearchKey, setFileSearchKey] = useState(0);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     if (isFullScreen) {
         return (
@@ -33,6 +41,7 @@ export default function ReactPlayground() {
                 </div>
                 <CollaborationPanel />
                 <AIAssistant />
+                <CommandPalette />
             </CollaborationProvider>
         );
     }
@@ -50,10 +59,10 @@ export default function ReactPlayground() {
             >
                 <Header/>
                 <div style={{flex: 1, minHeight: 0}}>
-                    <Allotment defaultSizes={[400, 400]}>
-                        <Allotment.Pane minSize={200}>
+                    <Allotment defaultSizes={isMobile ? [600, 400] : [400, 400]} vertical={isMobile}>
+                        <Allotment.Pane minSize={isMobile ? 150 : 200}>
                             <Allotment defaultSizes={[200, 500]}>
-                                <Allotment.Pane minSize={100} maxSize={300}>
+                                <Allotment.Pane minSize={100} maxSize={isMobile ? 0 : 300}>
                                     <FileExplorer/>
                                 </Allotment.Pane>
                                 <Allotment.Pane minSize={200}>
@@ -74,7 +83,7 @@ export default function ReactPlayground() {
                                     <Preview/>
                                     <ErrorOverlay/>
                                 </div>
-                                <div style={{height: 180, minHeight: 0, borderTop: `1px solid ${isDarkMode ? '#333' : '#eee'}`}}>
+                                <div style={{height: isMobile ? 100 : 180, minHeight: 0, borderTop: `1px solid ${isDarkMode ? '#333' : '#eee'}`}}>
                                     <ConsolePanel/>
                                 </div>
                             </div>
@@ -87,6 +96,7 @@ export default function ReactPlayground() {
             <CollaborationPanel />
             <AIAssistant />
             <DiffViewer open={showDiff} onClose={() => setShowDiff(false)} />
+            <CommandPalette />
         </CollaborationProvider>
     )
 }

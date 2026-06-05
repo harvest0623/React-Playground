@@ -23,7 +23,8 @@ export default function ConsolePanel() {
     const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const [filter, setFilter] = useState<FilterType>('all');
-    const [collapsed, setCollapsed] = useState(false);
+    const [isMobile] = useState(() => window.innerWidth <= 768);
+    const [collapsed, setCollapsed] = useState(() => window.innerWidth <= 768);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -67,23 +68,23 @@ export default function ConsolePanel() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '4px 12px',
+                padding: isMobile ? '2px 8px' : '4px 12px',
                 borderBottom: `1px solid ${isDarkMode ? '#333' : '#eee'}`,
                 flexShrink: 0,
-                gap: 8,
+                gap: 4,
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span
                         onClick={() => setCollapsed(!collapsed)}
                         style={{ cursor: 'pointer', fontSize: 10, color: isDarkMode ? '#888' : '#999' }}
                     >
                         {collapsed ? '\u25B6' : '\u25BC'}
                     </span>
-                    <span>{t('console')}</span>
-                    <span style={{ color: isDarkMode ? '#666' : '#aaa', fontSize: 11 }}>({consoleLogs.length})</span>
+                    <span style={{ fontSize: isMobile ? 11 : 12 }}>{t('console')}</span>
+                    <span style={{ color: isDarkMode ? '#666' : '#aaa', fontSize: isMobile ? 10 : 11 }}>({consoleLogs.length})</span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 2 : 4 }}>
                     {(['all', 'log', 'info', 'warn', 'error'] as FilterType[]).map(type => {
                         const count = type === 'all' ? consoleLogs.length : (logCounts[type] || 0);
                         if (type !== 'all' && count === 0) return null;
@@ -93,9 +94,9 @@ export default function ConsolePanel() {
                                 onClick={() => setFilter(type)}
                                 style={{
                                     cursor: 'pointer',
-                                    padding: '1px 6px',
+                                    padding: '1px 4px',
                                     borderRadius: 3,
-                                    fontSize: 10,
+                                    fontSize: isMobile ? 9 : 10,
                                     fontWeight: filter === type ? 'bold' : 'normal',
                                     backgroundColor: filter === type
                                         ? (isDarkMode ? '#444' : '#e0e0e0')
@@ -105,27 +106,29 @@ export default function ConsolePanel() {
                                         : METHOD_COLORS[type],
                                 }}
                             >
-                                {type === 'all' ? 'ALL' : `${METHOD_LABELS[type]} ${count}`}
+                                {type === 'all' ? (isMobile ? 'ALL' : 'ALL') : `${METHOD_LABELS[type]}${isMobile ? '' : ' ' + count}`}
                             </span>
                         );
                     })}
 
-                    <span
-                        onClick={handleCopyAll}
-                        style={{
-                            cursor: 'pointer', marginLeft: 4, padding: '1px 6px',
-                            borderRadius: 3, fontSize: 10, color: isDarkMode ? '#888' : '#999',
-                        }}
-                        title={t('copy')}
-                    >
-                        {t('copy')}
-                    </span>
+                    {!isMobile && (
+                        <span
+                            onClick={handleCopyAll}
+                            style={{
+                                cursor: 'pointer', marginLeft: 4, padding: '1px 6px',
+                                borderRadius: 3, fontSize: 10, color: isDarkMode ? '#888' : '#999',
+                            }}
+                            title={t('copy')}
+                        >
+                            {t('copy')}
+                        </span>
+                    )}
 
                     <span
                         onClick={clearConsoleLogs}
                         style={{
-                            cursor: 'pointer', padding: '1px 6px',
-                            borderRadius: 3, fontSize: 10, color: isDarkMode ? '#888' : '#999',
+                            cursor: 'pointer', padding: '1px 4px',
+                            borderRadius: 3, fontSize: isMobile ? 9 : 10, color: isDarkMode ? '#888' : '#999',
                         }}
                     >
                         {t('clear')}
@@ -144,21 +147,23 @@ export default function ConsolePanel() {
                         <div key={log.id} style={{
                             display: 'flex',
                             alignItems: 'flex-start',
-                            gap: 8,
-                            padding: '3px 12px',
+                            gap: 6,
+                            padding: isMobile ? '2px 8px' : '3px 12px',
                             borderBottom: `1px solid ${isDarkMode ? '#2a2a2a' : '#f5f5f5'}`,
                             whiteSpace: 'pre-wrap',
                             wordBreak: 'break-all',
                         }}>
-                            <span style={{ color: isDarkMode ? '#555' : '#bbb', fontSize: 10, flexShrink: 0, minWidth: 60 }}>
-                                {formatTimestamp(log.id)}
-                            </span>
+                            {!isMobile && (
+                                <span style={{ color: isDarkMode ? '#555' : '#bbb', fontSize: 10, flexShrink: 0, minWidth: 60 }}>
+                                    {formatTimestamp(log.id)}
+                                </span>
+                            )}
                             <span style={{
                                 color: METHOD_COLORS[log.method] || (isDarkMode ? '#ccc' : '#333'),
-                                fontSize: 10,
+                                fontSize: isMobile ? 9 : 10,
                                 fontWeight: 'bold',
                                 flexShrink: 0,
-                                minWidth: 30,
+                                minWidth: isMobile ? 25 : 30,
                             }}>
                                 {METHOD_LABELS[log.method] || log.method.toUpperCase()}
                             </span>

@@ -5,6 +5,7 @@ import { downLoadFiles, exportAsHtml, formatCode, shareFiles } from '../../React
 import { PlaygroundContext } from '../../ReactPlayground/PlaygroundContext'
 import DependencyManager from '../DependencyManager'
 import CollaborationButton from '../CollaborationButton'
+import ThemeStore from '../ThemeStore'
 import { useLanguage } from '../../i18n/LanguageContext'
 
 export default function Header() {
@@ -23,6 +24,27 @@ export default function Header() {
     const [showDeps, setShowDeps] = useState(false);
     const [showDownloadMenu, setShowDownloadMenu] = useState(false);
     const downloadMenuRef = useRef<HTMLDivElement>(null);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+                setShowMobileMenu(false);
+            }
+        };
+        if (showMobileMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [showMobileMenu]);
 
     const handleClickOutside = useCallback((e: MouseEvent) => {
         if (downloadMenuRef.current && !downloadMenuRef.current.contains(e.target as Node)) {
@@ -36,6 +58,83 @@ export default function Header() {
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [showDownloadMenu, handleClickOutside]);
+
+    const formatCodeAction = useCallback(async () => {
+        const file = files[selectedFileName];
+        if (!file) return;
+        const formatted = await formatCode(file.value, file.name);
+        if (formatted !== file.value) {
+            setFiles(prev => ({
+                ...prev,
+                [selectedFileName]: { ...prev[selectedFileName], value: formatted }
+            }));
+        }
+    }, [files, selectedFileName, setFiles]);
+
+    const shareAction = useCallback(() => {
+        const url = shareFiles(files);
+        navigator.clipboard.writeText(url);
+        alert(t('shareCopied'));
+    }, [files, t]);
+
+    const closeMobileMenu = useCallback(() => setShowMobileMenu(false), []);
+
+    const renderOverflowMenuItems = () => (
+        <>
+            <div className={styles.mobileMenuItem} onClick={() => { formatCodeAction(); closeMobileMenu(); }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#ccc' : '#333'} strokeWidth="2">
+                    <path d="M17 10H3"/>
+                    <path d="M21 6H3"/>
+                    <path d="M21 14H3"/>
+                    <path d="M17 18H3"/>
+                </svg>
+                {t('format')}
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setShowDeps(true); closeMobileMenu(); }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#ccc' : '#333'} strokeWidth="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                {t('dependencies')}
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setShowAI(!showAI); closeMobileMenu(); }}>
+                <i className="iconfont icon-wuguan" style={{ fontSize: 16, color: isDarkMode ? '#ccc' : '#333' }}></i>
+                {t('aiAssistant')}
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setShowShortcuts(!showShortcuts); closeMobileMenu(); }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#ccc' : '#333'} strokeWidth="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="M6 8h.01"/>
+                    <path d="M10 8h.01"/>
+                    <path d="M14 8h.01"/>
+                    <path d="M18 8h.01"/>
+                    <path d="M6 12h.01"/>
+                    <path d="M10 12h.01"/>
+                    <path d="M14 12h.01"/>
+                    <path d="M18 12h.01"/>
+                    <path d="M8 16h8"/>
+                </svg>
+                {t('shortcuts')}
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setEditorFontSize(Math.max(12, editorFontSize - 1)); closeMobileMenu(); }}>
+                <span style={{ fontSize: 16, fontWeight: 'bold', color: isDarkMode ? '#ccc' : '#333', width: 16, textAlign: 'center' }}>A-</span>
+                {t('fontSize')} ({editorFontSize - 1}px)
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setEditorFontSize(Math.min(24, editorFontSize + 1)); closeMobileMenu(); }}>
+                <span style={{ fontSize: 16, fontWeight: 'bold', color: isDarkMode ? '#ccc' : '#333', width: 16, textAlign: 'center' }}>A+</span>
+                {t('fontSize')} ({editorFontSize + 1}px)
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setShowCSSEditor(!showCSSEditor); closeMobileMenu(); }}>
+                <i className="iconfont icon-keshihuabianjiqi" style={{ fontSize: 16, color: isDarkMode ? '#ccc' : '#333' }}></i>
+                {t('cssVisualEditor')}
+            </div>
+            <div className={styles.mobileMenuItem} onClick={() => { setShowPropsEditor(!showPropsEditor); closeMobileMenu(); }}>
+                <i className="iconfont icon-shezhi" style={{ fontSize: 16, color: isDarkMode ? '#ccc' : '#333' }}></i>
+                {t('propsEditor')}
+            </div>
+        </>
+    );
 
     return (
         <div className={`${styles.header} ${isDarkMode ? styles.dark : ''}`}>
@@ -63,83 +162,83 @@ export default function Header() {
                     <div className={styles.tooltip}>{t('redo')} (Ctrl+Shift+Z)</div>
                 </div>
 
-                <div className={styles.iconButton} onClick={async () => {
-                    const file = files[selectedFileName];
-                    if (!file) return;
-                    const formatted = await formatCode(file.value, file.name);
-                    if (formatted !== file.value) {
-                        setFiles(prev => ({
-                            ...prev,
-                            [selectedFileName]: { ...prev[selectedFileName], value: formatted }
-                        }));
-                    }
-                }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
-                        <path d="M17 10H3"/>
-                        <path d="M21 6H3"/>
-                        <path d="M21 14H3"/>
-                        <path d="M17 18H3"/>
-                    </svg>
-                    <div className={styles.tooltip}>{t('format')} (Ctrl+M)</div>
-                </div>
+                {!isMobile && (
+                    <div className={styles.iconButton} onClick={formatCodeAction}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                            <path d="M17 10H3"/>
+                            <path d="M21 6H3"/>
+                            <path d="M21 14H3"/>
+                            <path d="M17 18H3"/>
+                        </svg>
+                        <div className={styles.tooltip}>{t('format')} (Ctrl+M)</div>
+                    </div>
+                )}
 
                 <div className={styles.themeToggle} onClick={toggleTheme}>
                     <i className={`iconfont ${isDarkMode ? 'icon-yueliang' : 'icon-taiyang'}`}></i>
                 </div>
 
-                <div
-                    className={styles.iconButton}
-                    onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
-                    title={locale === 'zh' ? 'Switch to English' : '切换到中文'}
-                >
-                    <span style={{ fontSize: 12, fontWeight: 600 }}>
-                        {locale === 'zh' ? '中' : 'EN'}
-                    </span>
-                </div>
-
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 8px',
-                        borderRadius: 6,
-                        fontSize: 12,
-                        color: lastSaved ? '#98c379' : '#e06c75',
-                        cursor: 'pointer',
-                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f5f5f5',
-                    }}
-                    onClick={clearStorage}
-                    title="点击清除存储并恢复默认文件"
-                >
-                    <div style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        backgroundColor: lastSaved ? '#98c379' : '#e06c75',
-                    }} />
-                    {lastSaved ? t('saved') : t('saved')}
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                {!isMobile && (
                     <div
                         className={styles.iconButton}
-                        onClick={() => setEditorFontSize(Math.max(12, editorFontSize - 1))}
-                        style={{ width: 28, height: 28, fontSize: 16 }}
+                        onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
+                        title={locale === 'zh' ? 'Switch to English' : '切换到中文'}
                     >
-                        −
+                        <span style={{ fontSize: 12, fontWeight: 600 }}>
+                            {locale === 'zh' ? '中' : 'EN'}
+                        </span>
                     </div>
-                    <span style={{ fontSize: 12, color: isDarkMode ? '#ccc' : '#333', minWidth: 36, textAlign: 'center' }}>
-                        {editorFontSize}px
-                    </span>
+                )}
+
+                {!isMobile && (
                     <div
-                        className={styles.iconButton}
-                        onClick={() => setEditorFontSize(Math.min(24, editorFontSize + 1))}
-                        style={{ width: 28, height: 28, fontSize: 16 }}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            padding: '4px 8px',
+                            borderRadius: 6,
+                            fontSize: 12,
+                            color: lastSaved ? '#98c379' : '#e06c75',
+                            cursor: 'pointer',
+                            backgroundColor: isDarkMode ? '#2d2d2d' : '#f5f5f5',
+                        }}
+                        onClick={clearStorage}
+                        title="点击清除存储并恢复默认文件"
                     >
-                        +
+                        <div style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
+                            backgroundColor: lastSaved ? '#98c379' : '#e06c75',
+                        }} />
+                        {lastSaved ? t('saved') : t('saved')}
                     </div>
-                </div>
+                )}
+
+                {!isMobile && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <div
+                            className={styles.iconButton}
+                            onClick={() => setEditorFontSize(Math.max(12, editorFontSize - 1))}
+                            style={{ width: 28, height: 28, fontSize: 16 }}
+                        >
+                            −
+                        </div>
+                        <span style={{ fontSize: 12, color: isDarkMode ? '#ccc' : '#333', minWidth: 36, textAlign: 'center' }}>
+                            {editorFontSize}px
+                        </span>
+                        <div
+                            className={styles.iconButton}
+                            onClick={() => setEditorFontSize(Math.min(24, editorFontSize + 1))}
+                            style={{ width: 28, height: 28, fontSize: 16 }}
+                        >
+                            +
+                        </div>
+                    </div>
+                )}
+
+                {!isMobile && <ThemeStore isDarkMode={isDarkMode} />}
 
                 <div className={styles.iconButton} onClick={() => setIsFullScreen(!isFullScreen)}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
@@ -162,26 +261,26 @@ export default function Header() {
                     <div className={styles.tooltip}>{isFullScreen ? t('exitFullscreen') : t('fullscreen')}</div>
                 </div>
 
-                <div className={styles.iconButton} onClick={() => setShowDeps(true)}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
-                    <div className={styles.tooltip}>{t('dependencies')}</div>
-                </div>
+                {!isMobile && (
+                    <div className={styles.iconButton} onClick={() => setShowDeps(true)}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                        <div className={styles.tooltip}>{t('dependencies')}</div>
+                    </div>
+                )}
 
-                <div className={styles.iconButton} onClick={() => setShowAI(!showAI)}>
-                    <i className="iconfont icon-wuguan" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
-                    <div className={styles.tooltip}>{t('aiAssistant')}</div>
-                </div>
+                {!isMobile && (
+                    <div className={styles.iconButton} onClick={() => setShowAI(!showAI)}>
+                        <i className="iconfont icon-wuguan" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
+                        <div className={styles.tooltip}>{t('aiAssistant')}</div>
+                    </div>
+                )}
 
                 <div className={styles.iconButton}>
-                    <i className="iconfont icon-fenxiang" onClick={() => {
-                        const url = shareFiles(files);
-                        navigator.clipboard.writeText(url);
-                        alert(t('shareCopied'));
-                    }}></i>
+                    <i className="iconfont icon-fenxiang" onClick={shareAction}></i>
                     <div className={styles.tooltip}>{t('share')}</div>
                 </div>
 
@@ -224,55 +323,80 @@ export default function Header() {
                     )}
                 </div>
 
-                <div className={styles.iconButton} onClick={() => setShowShortcuts(!showShortcuts)}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
-                        <rect x="2" y="4" width="20" height="16" rx="2"/>
-                        <path d="M6 8h.01"/>
-                        <path d="M10 8h.01"/>
-                        <path d="M14 8h.01"/>
-                        <path d="M18 8h.01"/>
-                        <path d="M6 12h.01"/>
-                        <path d="M10 12h.01"/>
-                        <path d="M14 12h.01"/>
-                        <path d="M18 12h.01"/>
-                        <path d="M8 16h8"/>
-                    </svg>
-                    <div className={styles.tooltip}>{t('shortcuts')} (Ctrl+Shift+?)</div>
-                </div>
+                {!isMobile && (
+                    <div className={styles.iconButton} onClick={() => setShowShortcuts(!showShortcuts)}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M6 8h.01"/>
+                            <path d="M10 8h.01"/>
+                            <path d="M14 8h.01"/>
+                            <path d="M18 8h.01"/>
+                            <path d="M6 12h.01"/>
+                            <path d="M10 12h.01"/>
+                            <path d="M14 12h.01"/>
+                            <path d="M18 12h.01"/>
+                            <path d="M8 16h8"/>
+                        </svg>
+                        <div className={styles.tooltip}>{t('shortcuts')} (Ctrl+Shift+?)</div>
+                    </div>
+                )}
 
                 <CollaborationButton />
 
-                <div className={styles.iconButton} onClick={() => setShowHistory(!showHistory)}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                    </svg>
-                    <div className={styles.tooltip}>{t('versionHistory')}</div>
-                </div>
+                {!isMobile && (
+                    <div className={styles.iconButton} onClick={() => setShowHistory(!showHistory)}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        <div className={styles.tooltip}>{t('versionHistory')}</div>
+                    </div>
+                )}
 
-                <div
-                    className={styles.iconButton}
-                    onClick={() => setShowCSSEditor(!showCSSEditor)}
-                    style={{ opacity: showCSSEditor ? 1 : undefined }}
-                >
-                    <i className="iconfont icon-keshihuabianjiqi" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
-                    <div className={styles.tooltip}>{t('cssVisualEditor')}</div>
-                </div>
+                {!isMobile && (
+                    <div
+                        className={styles.iconButton}
+                        onClick={() => setShowCSSEditor(!showCSSEditor)}
+                        style={{ opacity: showCSSEditor ? 1 : undefined }}
+                    >
+                        <i className="iconfont icon-keshihuabianjiqi" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
+                        <div className={styles.tooltip}>{t('cssVisualEditor')}</div>
+                    </div>
+                )}
 
-                <div
-                    className={styles.iconButton}
-                    onClick={() => setShowPropsEditor(!showPropsEditor)}
-                    style={{ opacity: showPropsEditor ? 1 : undefined }}
-                >
-                    <i className="iconfont icon-shezhi" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
-                    <div className={styles.tooltip}>{t('propsEditor')}</div>
-                </div>
+                {!isMobile && (
+                    <div
+                        className={styles.iconButton}
+                        onClick={() => setShowPropsEditor(!showPropsEditor)}
+                        style={{ opacity: showPropsEditor ? 1 : undefined }}
+                    >
+                        <i className="iconfont icon-shezhi" style={{ fontSize: 20, color: isDarkMode ? '#fff' : '#333', fontWeight: 'bold' }}></i>
+                        <div className={styles.tooltip}>{t('propsEditor')}</div>
+                    </div>
+                )}
 
-                <div className={styles.iconButton}>
-                    <i className="iconfont icon-github" onClick={() => window.open('https://github.com/harvest0623/React-Playground', '_blank')}></i>
+                <div className={styles.iconButton} onClick={() => window.open('https://github.com/harvest0623/React-Playground', '_blank')}>
+                    <i className="iconfont icon-github"></i>
                     <div className={styles.tooltip}>{t('github')}</div>
                 </div>
+
+                {isMobile && (
+                    <div className={styles.hamburgerButton} onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#fff' : '#333'} strokeWidth="2">
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                    </div>
+                )}
             </div>
+
+            {isMobile && showMobileMenu && (
+                <div className={styles.mobileMenu} ref={mobileMenuRef}>
+                    {renderOverflowMenuItems()}
+                </div>
+            )}
+
             <DependencyManager open={showDeps} onClose={() => setShowDeps(false)} />
         </div>
     )

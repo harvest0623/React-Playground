@@ -68,6 +68,12 @@ export interface PlaygroundContext {
     setShowDiff: (v: boolean) => void,
     diffData: { oldFiles: Files; newFiles: Files } | null,
     setDiffData: (v: { oldFiles: Files; newFiles: Files } | null) => void,
+    isCompiling: boolean,
+    setIsCompiling: (v: boolean) => void,
+    showCommandPalette: boolean,
+    setShowCommandPalette: (v: boolean) => void,
+    editorTheme: string,
+    setEditorTheme: (theme: string) => void,
 }
 
 // files = {
@@ -109,10 +115,20 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
     const [showPropsEditor, setShowPropsEditor] = useState<boolean>(false);
     const [showDiff, setShowDiff] = useState<boolean>(false);
     const [diffData, setDiffData] = useState<{ oldFiles: Files; newFiles: Files } | null>(null);
+    const [isCompiling, setIsCompiling] = useState<boolean>(false);
+    const [showCommandPalette, setShowCommandPalette] = useState<boolean>(false);
+    const [editorTheme, setEditorThemeState] = useState<string>(() => {
+        return localStorage.getItem('playground-editor-theme') || 'default-dark'
+    });
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const filesRef = useRef<Files>(files);
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const historyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const setEditorTheme = useCallback((theme: string) => {
+        setEditorThemeState(theme);
+        localStorage.setItem('playground-editor-theme', theme);
+    }, []);
 
     const undo = useCallback(() => {
         editorRef.current?.trigger('keyboard', 'undo', null);
@@ -225,6 +241,10 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
                 e.preventDefault();
                 setShowFileSearch(prev => !prev);
             }
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                setShowCommandPalette(prev => !prev);
+            }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -325,6 +345,12 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
                 setShowDiff,
                 diffData,
                 setDiffData,
+                isCompiling,
+                setIsCompiling,
+                showCommandPalette,
+                setShowCommandPalette,
+                editorTheme,
+                setEditorTheme,
             }}
         >
             {children}
