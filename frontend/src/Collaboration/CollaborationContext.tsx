@@ -2,7 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import type { Collaborator, CollaborationContextType, HistoryEntry } from './types.ts'
 import { PlaygroundContext } from '../ReactPlayground/PlaygroundContext.tsx'
 
-const WS_URL = 'ws://localhost:3001'
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 const RECONNECT_INTERVAL = 3000
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -171,7 +172,7 @@ export const CollaborationProvider = (props: PropsWithChildren) => {
 
     const createRoom = useCallback(async (name: string) => {
         try {
-            const res = await fetch('http://localhost:3001/api/rooms', {
+            const res = await fetch(`${API_URL}/api/rooms`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ roomName: name })
@@ -194,7 +195,7 @@ export const CollaborationProvider = (props: PropsWithChildren) => {
 
     const joinRoom = useCallback(async (targetRoomId: string, userName: string) => {
         try {
-            const res = await fetch(`http://localhost:3001/api/rooms/${targetRoomId}/join`, {
+            const res = await fetch(`${API_URL}/api/rooms/${targetRoomId}/join`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userName })
@@ -261,7 +262,7 @@ export const CollaborationProvider = (props: PropsWithChildren) => {
     const fetchHistory = useCallback(async () => {
         if (!roomId) return
         try {
-            const res = await fetch(`http://localhost:3001/api/rooms/${roomId}/history`)
+            const res = await fetch(`${API_URL}/api/rooms/${roomId}/history`)
             const data = await res.json()
             if (data.history) {
                 setHistory(data.history)
